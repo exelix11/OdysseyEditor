@@ -97,8 +97,8 @@
             this.switchDeadOnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectByViewIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectByNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.objectByModelNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -425,19 +425,19 @@
             // saveAsBymlToolStripMenuItem1
             // 
             this.saveAsBymlToolStripMenuItem1.Name = "saveAsBymlToolStripMenuItem1";
-            this.saveAsBymlToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
-            this.saveAsBymlToolStripMenuItem1.Text = "Save as Byml";
+            this.saveAsBymlToolStripMenuItem1.Size = new System.Drawing.Size(245, 22);
+            this.saveAsBymlToolStripMenuItem1.Text = "Save as Byml (unrecommended)";
             this.saveAsBymlToolStripMenuItem1.Click += new System.EventHandler(this.saveAsBymlToolStripMenuItem1_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(139, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(242, 6);
             // 
             // saveAsSZSToolStripMenuItem
             // 
             this.saveAsSZSToolStripMenuItem.Name = "saveAsSZSToolStripMenuItem";
-            this.saveAsSZSToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.saveAsSZSToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
             this.saveAsSZSToolStripMenuItem.Text = "Save as Szs";
             this.saveAsSZSToolStripMenuItem.Click += new System.EventHandler(this.saveAsSZSToolStripMenuItem_Click);
             // 
@@ -498,7 +498,7 @@
             // openBymlToolStripMenuItem
             // 
             this.openBymlToolStripMenuItem.Name = "openBymlToolStripMenuItem";
-            this.openBymlToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.openBymlToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.openBymlToolStripMenuItem.Text = "Open byml";
             this.openBymlToolStripMenuItem.Click += new System.EventHandler(this.openBymlToolStripMenuItem_Click);
             // 
@@ -735,6 +735,13 @@
             this.objectByNameToolStripMenuItem.Text = "Object by Name";
             this.objectByNameToolStripMenuItem.Click += new System.EventHandler(this.objectByNameToolStripMenuItem_Click);
             // 
+            // objectByModelNameToolStripMenuItem
+            // 
+            this.objectByModelNameToolStripMenuItem.Name = "objectByModelNameToolStripMenuItem";
+            this.objectByModelNameToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.objectByModelNameToolStripMenuItem.Text = "Object by ModelName";
+            this.objectByModelNameToolStripMenuItem.Click += new System.EventHandler(this.objectByModelNameToolStripMenuItem_Click);
+            // 
             // splitContainer2
             // 
             this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -757,13 +764,6 @@
             this.splitContainer2.Size = new System.Drawing.Size(788, 548);
             this.splitContainer2.SplitterDistance = 248;
             this.splitContainer2.TabIndex = 17;
-            // 
-            // objectByModelNameToolStripMenuItem
-            // 
-            this.objectByModelNameToolStripMenuItem.Name = "objectByModelNameToolStripMenuItem";
-            this.objectByModelNameToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.objectByModelNameToolStripMenuItem.Text = "Object by ModelName";
-            this.objectByModelNameToolStripMenuItem.Click += new System.EventHandler(this.objectByModelNameToolStripMenuItem_Click);
             // 
             // Form1
             // 
