@@ -748,6 +748,7 @@ namespace OdysseyEditor
             else if (e.Key == Key.Delete) btn_delObj_Click(null, null);
             else if (e.Key == Key.F) findToolStripMenuItem.ShowDropDown();
             else if (e.Key == Key.H) lnk_hideSelectedObjs_LinkClicked(null, null);
+            else if (e.Key == Key.Z && UndoList.Count > 0) UndoList.Pop().Undo();
             else if (e.Key == Key.C && SelectionCount == 1)
             {
                 if (SelectedObj[LevelObj.N_Links] != null)
@@ -767,7 +768,7 @@ namespace OdysseyEditor
             else return;
         }
 
-        int UndoMax = 30;
+        const int UndoMax = 30;
         void AddToUndo(Action<dynamic> act, string desc, dynamic arg = null)
         {
             UndoList.Push(new UndoAction(desc, act, arg));
@@ -896,6 +897,7 @@ namespace OdysseyEditor
                 MessageBox.Show("Select the path of the game, it will be used to display the models from the game");
                 changeToolStripMenuItem_Click(null, null);
                 MessageBox.Show("You can change it from the tools menu later");
+                this.Focus();
             }
             if (!Directory.Exists(ModelsFolder))
             {

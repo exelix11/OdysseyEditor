@@ -13,12 +13,13 @@ namespace OdysseyEditor
 
         public static async Task CheckForUpdates()
         {
-            var githubClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("TheFourthDimension"));
-            var ver = await githubClient.Repository.Release.GetAll("exelix11", "TheFourthDimension");
+            return; //Disabled until release
+            var githubClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("OdysseyEditor"));
+            var ver = await githubClient.Repository.Release.GetAll("exelix11", "OdysseyEditor");
             if (ver.Count > ReleaseID)
             {                
                 if (MessageBox.Show($"There is a new version of the editor, do you want to open the github page ?\r\n\r\nDetails:\r\n{ver[0].Body}", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    System.Diagnostics.Process.Start("https://github.com/exelix11/TheFourthDimension/releases");
+                    System.Diagnostics.Process.Start("https://github.com/exelix11/OdysseyEditor/releases");
             }
         }
 
