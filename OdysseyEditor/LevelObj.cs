@@ -121,7 +121,7 @@ namespace OdysseyEditor
         [Browsable(false)]
         public Vector3D ModelView_Rot
         {
-            get { return new Vector3D(this[N_Rotate]["X"], this[N_Rotate]["Z"], this[N_Rotate]["Y"]); } //TODO: check if it matches in-game
+            get { return new Vector3D(this[N_Rotate]["X"], -this[N_Rotate]["Z"], this[N_Rotate]["Y"]); } //TODO: check if it matches in-game
         }
 
         public Vector3D Scale
