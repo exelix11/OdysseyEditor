@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media.Media3D;
 using System.IO.Compression;
 using BfresLib;
+using OdysseyEditor.EditorFroms;
 
 namespace OdysseyEditor
 {
@@ -156,6 +157,9 @@ namespace OdysseyEditor
 
         void UnloadLevel()
         {
+            saveAsToolStripMenuItem.Enabled = false;
+            saveToolStripMenuItem.Enabled = false;
+
             splitContainer2.Enabled = false;
             findToolStripMenuItem.Visible = false;
 
@@ -205,6 +209,7 @@ namespace OdysseyEditor
             OtherLevelDataMenu.DropDownItems.AddRange(Files.ToArray());
             //LoadedLevel.OpenBymlViewer();
             //Load models
+            LoadingForm.ShowLoading(this, "Loading models...\r\nOpening a level for the first time will take longer");
             foreach (string k in LoadedLevel.objs.Keys.ToArray())
             {
                 LoadObjListModels(LoadedLevel.objs[k],k);
@@ -217,6 +222,9 @@ namespace OdysseyEditor
             comboBox1.SelectedIndex = 0;
             splitContainer2.Enabled = true;
             findToolStripMenuItem.Visible = true;
+            saveAsToolStripMenuItem.Enabled = true;
+            saveToolStripMenuItem.Enabled = true;
+            LoadingForm.EndLoading();
         }
 
         //NewLevel
@@ -529,7 +537,7 @@ namespace OdysseyEditor
         {
             var f = new EditorFroms.AddObjList();
             f.ShowDialog();
-            if (f.Result == null && f.Result.Trim() != "") return;
+            if (f.Result == null || f.Result.Trim() != "") return;
             LoadedLevel.objs.Add(f.Result, new ObjList(f.Result, null));
             comboBox1.SelectedIndex = comboBox1.Items.Add(f.Result);
         }
@@ -811,6 +819,7 @@ namespace OdysseyEditor
 
         public void DuplicateObj(LevelObj o, ObjList list)
         {
+            if (o == null) return;
             var newobj = o.Clone();
             newobj.ID = "obj" + Level.HighestID++;
             AddObj(newobj, list);
@@ -818,6 +827,7 @@ namespace OdysseyEditor
 
         public void DeleteObj(LevelObj o, ObjList list)
         {
+            if (o == null) return;
             AddToUndo((dynamic) =>
             InternalAddObj(o, list), "Deleted object: " + o.ToString());
             InternalDeleteObj(o, list);
@@ -911,14 +921,24 @@ namespace OdysseyEditor
                     MessageBox.Show("The game path is not set or not valid, can't extract texture archives");                
                 else
                 {
-                    MessageBox.Show($"The game texture archives will be extracted in {ModelsFolder}/GameTextures, this might take a while");                    
+                    MessageBox.Show($"The game texture archives will be extracted in {ModelsFolder}/GameTextures, this might take a while");
+                    LoadingForm.ShowLoading(this, "Extracting textures...\r\nThis might take a while");
                     foreach (var a in Directory.GetFiles($"{GameFolder}ObjectData\\").Where(x => x.EndsWith("Texture.szs")))
                     {
                         BfresLib.BfresConverter.GetTextures(
                             BfresFromSzs(Path.GetFileNameWithoutExtension(a)), 
                             ModelsFolder);
                     }
+                    LoadingForm.EndLoading();
                 }
+            }
+            if (Properties.Settings.Default.FirstStart)
+            {
+                Properties.Settings.Default.FirstStart = false;
+                Properties.Settings.Default.Save();
+                MessageBox.Show("You can now custmize the settings (to open this window again click on File -> Settings)");
+                new Settings(render).ShowDialog();
+                this.Focus();
             }
         }
 

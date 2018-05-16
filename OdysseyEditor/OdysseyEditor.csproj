@@ -97,6 +97,12 @@
     <Compile Include="EditorFroms\LinksEditor.Designer.cs">
       <DependentUpon>LinksEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorFroms\LoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorFroms\LoadingForm.Designer.cs">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorFroms\SearchResult.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,6 +144,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorFroms\LinksEditor.resx">
       <DependentUpon>LinksEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorFroms\LoadingForm.resx">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorFroms\SearchResult.resx">
       <DependentUpon>SearchResult.cs</DependentUpon>

@@ -21,5 +21,10 @@ namespace OdysseyEditor
         {
             label4.Text = "V. " + Application.ProductVersion;
         }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://github.com/exelix11/OdysseyEditor");
+        }
     }
 }

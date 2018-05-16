@@ -9,11 +9,10 @@ namespace OdysseyEditor
 {
     class UpdateCheck
     {
-        public const int ReleaseID = 0;
+        public const int ReleaseID = 1;
 
         public static async Task CheckForUpdates()
         {
-            return; //Disabled until release
             var githubClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("OdysseyEditor"));
             var ver = await githubClient.Repository.Release.GetAll("exelix11", "OdysseyEditor");
             if (ver.Count > ReleaseID)
