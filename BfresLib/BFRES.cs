@@ -76,7 +76,7 @@ namespace Smash_Forge
             verNumA = f.readByte();
             if (SwitchCheck == 0x20202020)
             {
-                Console.WriteLine("Version = " + verNumA + "." + verNumB + "." + verNumC + "." + verNumD);
+                //Console.WriteLine("Version = " + verNumA + "." + verNumB + "." + verNumC + "." + verNumD);
                 if (f.readShort() == 0xFEFF)
                     f.Endian = Endianness.Big;
                 else f.Endian = Endianness.Little;
@@ -116,8 +116,8 @@ namespace Smash_Forge
                 int FSCNCount = f.readShort();
                 int EMBCount = f.readShort();
                 f.skip(12); // Padding
-                            // Console.WriteLine($"FMDLOffset {FMDLOffset} FMDLCount {FMDLCount} FMDLDict {FMDLDict} FSKAOffset {FSKAOffset} FSKADict {FSKADict}");
-                            //  Console.WriteLine($"FMAAOffset {FMAAOffset} FMAADict {FMAADict} FVISOffset {FVISOffset} FSHUOffset {FSKAOffset} FSKADict {FSHUDict}");
+                            // //Console.WriteLine($"FMDLOffset {FMDLOffset} FMDLCount {FMDLCount} FMDLDict {FMDLDict} FSKAOffset {FSKAOffset} FSKADict {FSKADict}");
+                            //  //Console.WriteLine($"FMAAOffset {FMAAOffset} FMAADict {FMAADict} FVISOffset {FVISOffset} FSHUOffset {FSKAOffset} FSKADict {FSHUDict}");
 
                 //FMDLs -Models-
                 for (int i = 0; i < EMBCount; i++)
@@ -139,7 +139,7 @@ namespace Smash_Forge
                 f.seek((int)FMDLOffset);
                 for (int i = 0; i < FMDLCount; i++)
                 {
-                    //   Console.WriteLine("Reading FMDL....");
+                    //   //Console.WriteLine("Reading FMDL....");
 
                     FMDL_Model model = new FMDL_Model();
 
@@ -174,14 +174,14 @@ namespace Smash_Forge
                     int NextFMDL = f.pos();
 
                     //Models.Nodes.Add(fmdl_info.name);
-                    //   Console.WriteLine($" Name {fmdl_info.name} eofString {fmdl_info.eofString} fsklOff {fmdl_info.fsklOff}");
-                    //  Console.WriteLine(fmdl_info.fvtxCount);
+                    //   //Console.WriteLine($" Name {fmdl_info.name} eofString {fmdl_info.eofString} fsklOff {fmdl_info.fsklOff}");
+                    //  //Console.WriteLine(fmdl_info.fvtxCount);
 
                     List<FVTXH> FVTXArr = new List<FVTXH>();
                     f.seek((int)fmdl_info.fvtxArrOff);
                     for (int vtx = 0; vtx < fmdl_info.fvtxCount; vtx++)
                     {
-                        //   Console.WriteLine("Reading FVTX....");
+                        //   //Console.WriteLine("Reading FVTX....");
                         f.skip(16);
                         FVTXArr.Add(new FVTXH
                         {
@@ -200,7 +200,7 @@ namespace Smash_Forge
                             vertCount = f.readInt(),
                             SkinWeightInfluence = f.readInt()
                         });
-                        //  Console.WriteLine($"attCount {FVTXArr[vtx].attCount}");
+                        //  //Console.WriteLine($"attCount {FVTXArr[vtx].attCount}");
                     }
 
 
@@ -208,7 +208,7 @@ namespace Smash_Forge
                     List<FMATH> FMATheaders = new List<FMATH>();
                     for (int mat = 0; mat < fmdl_info.fmatCount; mat++)
                     {
-                        //    Console.WriteLine("Reading FMAT....");
+                        //    //Console.WriteLine("Reading FMAT....");
                         f.skip(16);
 
 
@@ -246,12 +246,12 @@ namespace Smash_Forge
 
                         };
                         string FMATNameOffset = fmat_info.name;
-                        // Console.WriteLine($"{FMATNameOffset} {fmat_info.texSelCount} ");
+                        // //Console.WriteLine($"{FMATNameOffset} {fmat_info.texSelCount} ");
                         FMATheaders.Add(fmat_info);
                     }
 
                     f.seek((int)fmdl_info.fsklOff + 16);
-                    // Console.WriteLine("Reading FSKL....");
+                    // //Console.WriteLine("Reading FSKL....");
                     FSKLH fskl_info = new FSKLH
                     {
                         boneIndxOff = f.readInt64(),
@@ -282,7 +282,7 @@ namespace Smash_Forge
                         exIndxCount = f.readShort(),
                         u1 = f.readInt(),
                     };
-                    //  Console.WriteLine($"Bone Count {fskl_info.boneArrCount}");
+                    //  //Console.WriteLine($"Bone Count {fskl_info.boneArrCount}");
 
                     //FSKL and many other sections will be revised and cleaner later
 
@@ -308,7 +308,7 @@ namespace Smash_Forge
 
 
                     List<FSHPH> FSHPArr = new List<FSHPH>();
-                    // Console.WriteLine("Reading FSHP....");
+                    // //Console.WriteLine("Reading FSHP....");
                     f.seek((int)fmdl_info.fshpOffset);
                     for (int shp = 0; shp < fmdl_info.fshpCount; shp++)
                     {
@@ -339,9 +339,9 @@ namespace Smash_Forge
                         });
                     }
 
-                    // Console.WriteLine("Reading Bones....");
+                    // //Console.WriteLine("Reading Bones....");
                    
-                    // Console.WriteLine("Reading FSHP Array....");
+                    // //Console.WriteLine("Reading FSHP Array....");
 
                     //MeshTime!!
 
@@ -354,7 +354,7 @@ namespace Smash_Forge
                         poly.name = f.readString(FSHPArr[m].polyNameOff + 2, -1);
 
 
-                        //    Console.WriteLine("Polygon = " + poly.name);
+                        //    //Console.WriteLine("Polygon = " + poly.name);
 
                         List<attdata> AttrArr = new List<attdata>();
                         f.seek((int)FVTXArr[FSHPArr[m].fvtxIndx].attArrOff);
@@ -369,7 +369,7 @@ namespace Smash_Forge
                             f.Endian = Endianness.Little;
                             int buffOff = f.readShort();
                             int buffIndx = f.readShort();
-                            //   Console.WriteLine($"{AttType} Type = {vertType} Offset = {buffOff} Index = {buffIndx} ");
+                            //   //Console.WriteLine($"{AttType} Type = {vertType} Offset = {buffOff} Index = {buffIndx} ");
                             AttrArr.Add(new attdata { attName = AttType, buffIndx = buffIndx, buffOff = buffOff, vertType = vertType });
                         }
 
@@ -382,7 +382,7 @@ namespace Smash_Forge
                         f.skip(0x030);
                         int DataStart = f.readInt();
 
-                        // Console.WriteLine($"RLT {DataStart}");
+                        // //Console.WriteLine($"RLT {DataStart}");
 
 
                         List<buffData> BuffArr = new List<buffData>();
@@ -401,7 +401,7 @@ namespace Smash_Forge
                             if (data.DataOffset % 8 != 0) data.DataOffset = data.DataOffset + (8 - (data.DataOffset % 8));
 
                             BuffArr.Add(data);
-                            //   Console.WriteLine("Data Offset = " + data.DataOffset + " Vertex Buffer Size =" + data.buffSize + " Index = " + buff + " vertexStrideSize size =" + data.strideSize);
+                            //   //Console.WriteLine("Data Offset = " + data.DataOffset + " Vertex Buffer Size =" + data.buffSize + " Index = " + buff + " vertexStrideSize size =" + data.strideSize);
                         }
 
                         for (int v = 0; v < FVTXArr[FSHPArr[m].fvtxIndx].vertCount; v++)
@@ -502,7 +502,7 @@ namespace Smash_Forge
                                         }
                                         break;
                                     default:
-                                        //     Console.WriteLine(AttrArr[attr].attName + " Unknown type " + AttrArr[attr].vertType.ToString("x") + " 0x");
+                                        //     //Console.WriteLine(AttrArr[attr].attName + " Unknown type " + AttrArr[attr].vertType.ToString("x") + " 0x");
                                         break;
                                 }
                             }
@@ -564,7 +564,7 @@ namespace Smash_Forge
                         if (MatTexList.Count > 0)
                             poly.texNames.Add(MatTexList[0]);
 
-                        Console.WriteLine(String.Join(",",MatTexList));
+                        //Console.WriteLine(String.Join(",",MatTexList));
 
                         model.poly.Add(poly);
                     }

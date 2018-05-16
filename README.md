@@ -22,6 +22,7 @@ Hotkey | action
 Space | Move camera to selected object
 Ctrl + drag object | Drag an object in the 3d view
 Alt while dragging | Snap the object every 100 units
+Shift while dragging | Snap the object every 50 units
 \+ | Add a new object (untested in-game)
 D | Duplicate selection
 Del | Delete selection
