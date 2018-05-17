@@ -773,6 +773,11 @@ namespace OdysseyEditor
                     new EditorFroms.LinksEditor(SelectedObj[LevelObj.N_Links]).ShowDialog();
                 }
             }
+#if DEBUG
+            else if (e.Key == Key.P)
+                foreach (ObjList l in LoadedLevel.objs.Values)
+                    foreach (LevelObj o in l) UpdateModelPosition(o);
+#endif
             else return;
         }
 

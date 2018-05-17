@@ -58,7 +58,7 @@ namespace BfresLib
                         bool NoTexture = mesh.vertices[0].tx.Count == 0;
                         foreach (var v in mesh.vertices)
                         {
-                            f.WriteLine($"v {v.pos.X} {v.pos.Y} {v.pos.Z} {v.col.X} {v.col.Y} {v.col.Z}");
+                            f.WriteLine($"v {v.pos.X} {v.pos.Y} {v.pos.Z}"); //{v.col.X} {v.col.Y} {v.col.Z} are vertex colors (unsupported for OBJ)
                             if (!NoTexture)
                                 f.WriteLine($"vt {v.tx[0].X } {1 - v.tx[0].Y}");
                             else
@@ -77,9 +77,6 @@ namespace BfresLib
                             foreach (string m in mesh.texNames)
                                 if (!ExportMats.Contains(m)) ExportMats.Add(m);
                             f.WriteLine($"usemtl {mesh.texNames[0]}");
-                            //if (!BNTX.textured.ContainsKey(mesh.texNames[0]))
-                            //    NoTexture = true;
-                            //Debug.Assert(mesh.texNames.Count == 1);
                         }
 
                         for (int i = 0; i < mesh.faces.Count; i++)
@@ -110,11 +107,11 @@ namespace BfresLib
 
                     foreach (string MatName in ExportMats)
                     {
+                        if (!IsMaterialNameValid(MatName)) continue; //If a material texture is missing the mesh will not show, skip non "alb" materials
                         f.WriteLine($"newmtl {MatName}");
                         f.WriteLine($"Ka 0.000000 0.000000 0.000000");
                         f.WriteLine($"Kd 1.000000 1.000000 1.000000");
                         f.WriteLine($"Ks 0.0 0.0 0.0 ");
-                        //if (BNTX.textured.ContainsKey(MatName))
                         f.WriteLine($"map_Kd {textureFolder}/{MatName}.{texFmt}\n");
                     }
                 }
@@ -133,9 +130,7 @@ namespace BfresLib
                 foreach (string k in model.textures.Keys)
                 {
                     foreach (var tex in model.textures[k].Textures.Where(
-                        x => x.Name.EndsWith("_alb", StringComparison.InvariantCultureIgnoreCase) ||
-                             x.Name.EndsWith("_alb.0", StringComparison.InvariantCultureIgnoreCase) ||
-                             !x.Name.Contains("_")))
+                        x => IsMaterialNameValid(x.Name)))
                     {
                         if (!File.Exists($"{ModelsFolder}/{textureFolder}/{tex.Name}.{texFmt}"))
                             ExportTexture(tex, $"{ModelsFolder}/{textureFolder}/{tex.Name}.{texFmt}");
@@ -144,6 +139,13 @@ namespace BfresLib
                     }
                 }
             }
+        }
+
+        static bool IsMaterialNameValid(string x)
+        {
+            return x.EndsWith("_alb", StringComparison.InvariantCultureIgnoreCase) ||
+                   x.EndsWith("_alb.0", StringComparison.InvariantCultureIgnoreCase) ||
+                   !x.Contains("_");
         }
         
         static void ExportTexture(Texture Tex, string FileName)
@@ -161,7 +163,7 @@ namespace BfresLib
                 {
                     Console.WriteLine("FAILED texture " + Tex.Name);
 #if DEBUG
-                   // Debugger.Break();
+                    Debugger.Break();
 #endif
                 }
 #if !FIRST_MIPMAP_ONLY
