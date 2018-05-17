@@ -537,7 +537,7 @@ namespace OdysseyEditor
         {
             var f = new EditorFroms.AddObjList();
             f.ShowDialog();
-            if (f.Result == null || f.Result.Trim() != "") return;
+            if (f.Result == null || f.Result.Trim() == "") return;
             LoadedLevel.objs.Add(f.Result, new ObjList(f.Result, null));
             comboBox1.SelectedIndex = comboBox1.Items.Add(f.Result);
         }
