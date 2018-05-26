@@ -46,7 +46,7 @@ namespace OdysseyEditor
     {
         public Dictionary<string, byte[]> SzsFiles;
         public Dictionary<string, ObjList> objs = new Dictionary<string, ObjList>();
-        dynamic LoadedByml = null;
+        public dynamic LoadedByml = null;
         public string Filename = "";
         int _ScenarioIndex = -1;
 
