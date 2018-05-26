@@ -7,6 +7,8 @@ using System.Text;
 using Syroot.BinaryData;
 using Syroot.Maths;
 using System.Globalization;
+using System.Diagnostics;
+using ExtensionMethods;
 
 namespace Syroot.NintenTools.Byaml.Dynamic
 {
@@ -492,6 +494,54 @@ namespace Syroot.NintenTools.Byaml.Dynamic
             }
         }
 
+        private static bool IDictionaryIsEqual(IDictionary<string, dynamic> a, IDictionary<string, dynamic> b)
+        {
+            if (a.Count != b.Count)  return false;
+            foreach (string key in a.Keys)
+            {
+                if (!b.ContainsKey(key)) return false;
+                if ((a[key] == null && a[key] != null) || (a[key] != null && a[key] == null)) return false;
+                else if (a[key] == null && a[key] == null) continue;
+
+                if (TypeNotEqual(a[key].GetType(),b[key].GetType())) return false;
+
+                if (a[key] is IList<dynamic> && IListIsEqual(a[key], b[key])) continue;
+                else if (a[key] is IDictionary<string, dynamic> && IDictionaryIsEqual(a[key], b[key])) continue;
+                else if (a[key] == b[key]) continue;
+
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IListIsEqual(IList<dynamic> a, IList<dynamic> b)
+        {
+            if (a.Count != b.Count) return false;
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (TypeNotEqual(a[i].GetType(),b[i].GetType())) return false;
+
+                if (a[i] is IList<dynamic> && IListIsEqual(a[i], b[i])) continue;
+                else if (a[i] is IDictionary<string, dynamic> && IDictionaryIsEqual(a[i], b[i])) continue;
+                else if (a[i] == b[i]) continue;
+
+                return false;
+            }
+            return true;
+        }
+
+        static bool TypeNotEqual(Type a, Type b)
+        {
+            return !(a.IsAssignableFrom(b) || b.IsAssignableFrom(a)); // without this LinksNode wouldn't be equal to IDictionary<string,dynamic>
+        }
+
+        static bool IEnumerableIsEqual(IEnumerable a, IEnumerable b)
+        {
+            if (TypeNotEqual(a.GetType(),b.GetType())) return false;
+            if (a is IDictionary) return IDictionaryIsEqual((IDictionary<string, dynamic>)a, (IDictionary<string, dynamic>)b);
+            else return IListIsEqual((IList<dynamic>)a, (IList<dynamic>)b);
+        }
+
         Dictionary<dynamic, uint> alreadyWrittenNodes = new Dictionary<dynamic, uint>();
         private Offset WriteValue(BinaryDataWriter writer, dynamic value)
         {
@@ -507,12 +557,15 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     return null;
                 case ByamlNodeType.Dictionary:
                 case ByamlNodeType.Array:
-                    if (alreadyWrittenNodes.ContainsKey(value))
+                    foreach (var d in alreadyWrittenNodes.Keys.Where(x => x is IEnumerable && x.Count == value.Count))
                     {
-                        writer.Write(alreadyWrittenNodes[value]);
-                        return null;
+                        if (IEnumerableIsEqual(d, value))
+                        {
+                            writer.Write(alreadyWrittenNodes[d]);
+                            return null;
+                        }
                     }
-                    else return writer.ReserveOffset();
+                    return writer.ReserveOffset();
                 case ByamlNodeType.Boolean:
                     writer.Write(value ? 1 : 0);
                     return null;
@@ -535,6 +588,18 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 offset.Satisfy((int)alreadyWrittenNodes[value]);
                 return;
             }
+            else if (value is IEnumerable)
+            {
+                foreach (var d in alreadyWrittenNodes.Keys.Where(x => x is IEnumerable && x.Count == value.Count))
+                {
+                    if (IEnumerableIsEqual(d, value))
+                    {
+                        offset.Satisfy((int)alreadyWrittenNodes[d]);
+                        return;
+                    }
+                }
+            }
+
             // Satisfy the offset to the complex node value which must be 4-byte aligned.
             writer.Align(4);
             offset.Satisfy();
@@ -586,7 +651,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
         {
             writer.Write(_pathArray.IndexOf(node));
         }
-
+        
         private void WriteArrayNode(BinaryDataWriter writer, IEnumerable node)
         {
             WriteTypeAndLength(writer, ByamlNodeType.Array, node);

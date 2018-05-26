@@ -17,6 +17,7 @@ using System.Windows.Media.Media3D;
 using System.IO.Compression;
 using BfresLib;
 using OdysseyEditor.EditorFroms;
+using System.Diagnostics;
 
 namespace OdysseyEditor
 {
@@ -157,6 +158,18 @@ namespace OdysseyEditor
 
         void UnloadLevel()
         {
+            List<Form> ToClose = new List<Form>();
+            foreach (Form frm in Application.OpenForms)
+            {
+                if (frm is SearchResult ||
+                    frm is AddObjList ||
+                    frm is LinksEditor)
+                    ToClose.Add(frm);
+            }
+            for (int i = 0; i < ToClose.Count; i++)
+                ToClose[i].Close();
+            ToClose = null;
+
             saveAsToolStripMenuItem.Enabled = false;
             saveToolStripMenuItem.Enabled = false;
 
@@ -193,7 +206,11 @@ namespace OdysseyEditor
         public void LoadLevel(string path)
         {
             UnloadLevel();
+#if DEBUG
+            LoadedLevel = new Level(path, 0);
+#else
             LoadedLevel = new Level(path, -1);
+#endif
             //Populate szs file list
             int index = 0;
             List<ToolStripMenuItem> Files = new List<ToolStripMenuItem>();
@@ -251,7 +268,7 @@ namespace OdysseyEditor
             string CachedModelPath = $"{ModelsFolder}\\{ObjName}.obj";
             if (File.Exists(CachedModelPath))
                 return CachedModelPath;
-            else if (NoModels)
+            else if (NoModels && Debugger.IsAttached)
                 return null;
             else if (BfresConverter.Convert(BfresFromSzs(ObjName), CachedModelPath)) 
                 return CachedModelPath;
@@ -311,7 +328,7 @@ namespace OdysseyEditor
         }
 
         //Open,save find etc
-        #region UIControlsEvents
+#region UIControlsEvents
         private void objectByIdToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string ID = "obj0";
@@ -371,7 +388,7 @@ namespace OdysseyEditor
             render.LookAt(o.ModelView_Pos);
         }
 
-        #region ClipBoard
+#region ClipBoard
         private void ClipBoardMenu_Opening(object sender, CancelEventArgs e)
         {
             ClipBoardMenu_Paste.Enabled = StoredValue != null;
@@ -450,7 +467,7 @@ namespace OdysseyEditor
                 }
             }
         }
-        #endregion
+#endregion
 
         private void UndoMenu_Open(object sender, EventArgs e)
         {
