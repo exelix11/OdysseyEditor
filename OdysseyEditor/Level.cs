@@ -134,7 +134,7 @@ namespace OdysseyEditor
             }
             else
                 SzsFiles[Path.GetFileNameWithoutExtension(FilePath) + ".byml"] = ToByaml();
-            return SARC.pack(SzsFiles);
+            return YAZ0.Compress(SARC.pack(SzsFiles));
         }
 
         public bool HasList(string name) { return objs.ContainsKey(name); }
