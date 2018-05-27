@@ -259,17 +259,18 @@ namespace OdysseyEditor
             findToolStripMenuItem.Visible = true;
         }
 
-        bool NoModels = false; //Debug only
+        bool NoModels = true; //Debug only
         List<string> SkipModels = null;
         string GetModelName(string ObjName) //convert bfres to obj and cache in models folder
         {
+            if (NoModels && Debugger.IsAttached)
+                return null;
+
             if (SkipModels?.Contains(ObjName) ?? false) return null;
 
             string CachedModelPath = $"{ModelsFolder}\\{ObjName}.obj";
             if (File.Exists(CachedModelPath))
                 return CachedModelPath;
-            else if (NoModels && Debugger.IsAttached)
-                return null;
             else if (BfresConverter.Convert(BfresFromSzs(ObjName), CachedModelPath)) 
                 return CachedModelPath;
 
@@ -530,11 +531,10 @@ namespace OdysseyEditor
             if (LoadedLevel == null) return;
             SaveFileDialog sav = new SaveFileDialog();
             sav.Filter = "szs file | *.szs";
-            sav.FileName = Path.GetFileNameWithoutExtension(LoadedLevel.Filename);
+            sav.FileName = Path.GetFileNameWithoutExtension(LoadedLevel.FilePath);
             if (sav.ShowDialog() == DialogResult.OK)
             {
-                File.WriteAllBytes(sav.FileName, LoadedLevel.SaveSzs());
-                LoadedLevel.Filename = sav.FileName;
+                File.WriteAllBytes(sav.FileName, LoadedLevel.SaveSzs(sav.FileName));
             }
         }
 
@@ -543,7 +543,7 @@ namespace OdysseyEditor
             if (LoadedLevel == null) return;
             SaveFileDialog sav = new SaveFileDialog();
             sav.Filter = "byml file | *.byml";
-            sav.FileName = Path.GetFileNameWithoutExtension(LoadedLevel.Filename);
+            sav.FileName = Path.GetFileNameWithoutExtension(LoadedLevel.FilePath);
             if (sav.ShowDialog() == DialogResult.OK)
             {
                 File.WriteAllBytes(sav.FileName, LoadedLevel.ToByaml());

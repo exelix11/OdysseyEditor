@@ -32,7 +32,7 @@ namespace RedCarpet
             bw.Write((UInt16)0xFEFF); // BOM
             bw.Write((UInt32)0x00); //filesize update later
             bw.Write((UInt32)0x00); //Beginning of data
-            bw.Write((UInt32)0x01000000);
+            bw.Write((UInt32)0x00000100);
             bw.Write("SFAT", BinaryStringFormat.NoPrefixOrTermination);
             bw.Write((UInt16)0xc);
             bw.Write((UInt16)files.Keys.Count);
@@ -41,10 +41,8 @@ namespace RedCarpet
             foreach (string k in files.Keys)
             {
                 bw.Write(NameHash(k));
-                bw.Write((byte)0x1);
-                bw.Write((byte)0); //this should be part of the name index, but u16 will work too
-                offsetToUpdate.Add((uint)bw.BaseStream.Position);
-                bw.Write((UInt16)0);
+                offsetToUpdate.Add((uint)bw.BaseStream.Position);                
+                bw.Write((UInt32)0);
                 bw.Write((UInt32)0);
                 bw.Write((UInt32)0);
             }
@@ -58,17 +56,19 @@ namespace RedCarpet
                 bw.Write(k, BinaryStringFormat.ZeroTerminated);
                 bw.Align(4);
             }
+            bw.Align(0x80); //Odyssey padding ?
             List<uint> FileOffsets = new List<uint>();
             foreach (string k in files.Keys)
             {
                 FileOffsets.Add((uint)bw.BaseStream.Position);
                 bw.Write(files[k]);
-                bw.Align(4);
+                bw.Align(0x80); //Odyssey padding ?
             }
             for (int i = 0; i < offsetToUpdate.Count; i++)
             {
                 bw.BaseStream.Position = offsetToUpdate[i];
                 bw.Write((UInt16)((StringOffsets[i] - StringOffsets[0]) / 4));
+                bw.Write((UInt16)0x0100);
                 bw.Write((UInt32)(FileOffsets[i] - FileOffsets[0]));
                 bw.Write((UInt32)(FileOffsets[i] + files.Values.ToArray()[i].Length - FileOffsets[0]));
             }

@@ -47,7 +47,7 @@ namespace OdysseyEditor
         public Dictionary<string, byte[]> SzsFiles;
         public Dictionary<string, ObjList> objs = new Dictionary<string, ObjList>();
         public dynamic LoadedByml = null;
-        public string Filename = "";
+        public string FilePath = "";
         int _ScenarioIndex = -1;
 
         public static int HighestID = 0;
@@ -56,17 +56,17 @@ namespace OdysseyEditor
         {
             if (!empty) throw new Exception();
             SzsFiles = new Dictionary<string, byte[]>();
-            Filename = levelN;
+            FilePath = levelN;
             LoadedByml = new dynamic[15];
             for (int i = 0; i < 15; i++)
                 LoadedByml[i] = new Dictionary<string, dynamic>();
-            SzsFiles.Add(Path.GetFileNameWithoutExtension(Filename) + ".byml", ByamlFile.Save(LoadedByml,false, Syroot.BinaryData.ByteOrder.LittleEndian));
+            SzsFiles.Add(Path.GetFileNameWithoutExtension(FilePath) + ".byml", ByamlFile.Save(LoadedByml,false, Syroot.BinaryData.ByteOrder.LittleEndian));
             LoadObjects();
         }
 
         public Level (string path, int scenarioIndex = -1)
         {
-            Filename = path;
+            FilePath = path;
             Load(File.ReadAllBytes(path), scenarioIndex);
         }        
 
@@ -78,7 +78,7 @@ namespace OdysseyEditor
 
         void LoadObjects(int scenarioIndex = -1)
         {
-            Stream s = new MemoryStream(SzsFiles[Path.GetFileNameWithoutExtension(Filename) + ".byml"]);
+            Stream s = new MemoryStream(SzsFiles[Path.GetFileNameWithoutExtension(FilePath) + ".byml"]);
             LoadedByml = ByamlFile.Load(s,false, Syroot.BinaryData.ByteOrder.LittleEndian);
 
             if (scenarioIndex == -1)
@@ -124,10 +124,17 @@ namespace OdysseyEditor
             return res;
         }
 
-        public byte[] SaveSzs()
+        public byte[] SaveSzs(string newPath = null)
         {
-            SzsFiles[Path.GetFileNameWithoutExtension(Filename) + ".byml"] = ToByaml();
-            return YAZ0.Compress(SARC.pack(SzsFiles));
+            if (newPath != null)
+            {
+                SzsFiles.Remove(Path.GetFileNameWithoutExtension(FilePath) + ".byml");
+                FilePath = newPath;
+                SzsFiles.Add(Path.GetFileNameWithoutExtension(FilePath) + ".byml",ToByaml());
+            }
+            else
+                SzsFiles[Path.GetFileNameWithoutExtension(FilePath) + ".byml"] = ToByaml();
+            return SARC.pack(SzsFiles);
         }
 
         public bool HasList(string name) { return objs.ContainsKey(name); }

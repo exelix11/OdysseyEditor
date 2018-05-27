@@ -415,8 +415,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
             CollectNodeArrayContents(root, ref tmp);
             tmp.Clear();
             _nameArray.Sort(StringComparer.Ordinal);
-            _stringArray.Sort(StringComparer.Ordinal);
-                
+            _stringArray.Sort(StringComparer.Ordinal);                           
 
             // Open a writer on the given stream.
             using (BinaryDataWriter writer = new BinaryDataWriter(stream, Encoding.UTF8, true))
@@ -459,9 +458,26 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 WriteValueContents(writer, rootOffset, GetNodeType(root), root);
             }
         }
-        
+                
         private void CollectNodeArrayContents(dynamic node,ref List<dynamic> alreadyCollected)
         {
+            if (node == null) return;
+            foreach (var o in alreadyCollected.Where(x => !TypeNotEqual(x.GetType(),node.GetType())))
+            {
+                if (node is string)
+                {
+                    if (o == node)
+                        return;
+                }
+                else if (node is IEnumerable)
+                {
+                    if (IEnumerableIsEqual(node, o))
+                        return;
+                }
+                else if (node == o)
+                    return;
+            }
+
             alreadyCollected.Add(node);
             if (node is string)
             {
@@ -481,15 +497,15 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     if (!_nameArray.Contains(entry.Key))
                     {
                         _nameArray.Add(entry.Key);
-                    }
-                    if (!alreadyCollected.Contains(entry.Value)) CollectNodeArrayContents(entry.Value,ref alreadyCollected);
+                    }                    
+                    CollectNodeArrayContents(entry.Value, ref alreadyCollected);
                 }
             }
-            else if (node is IEnumerable)
+            else if (node is IList<dynamic>)
             {
                 foreach (dynamic childNode in node)
                 {
-                    if (!alreadyCollected.Contains(childNode)) CollectNodeArrayContents(childNode,ref alreadyCollected);
+                    CollectNodeArrayContents(childNode, ref alreadyCollected);
                 }
             }
         }
@@ -500,8 +516,8 @@ namespace Syroot.NintenTools.Byaml.Dynamic
             foreach (string key in a.Keys)
             {
                 if (!b.ContainsKey(key)) return false;
-                if ((a[key] == null && a[key] != null) || (a[key] != null && a[key] == null)) return false;
-                else if (a[key] == null && a[key] == null) continue;
+                if ((a[key] == null && b[key] != null) || (a[key] != null && b[key] == null)) return false;
+                else if (a[key] == null && b[key] == null) continue;
 
                 if (TypeNotEqual(a[key].GetType(),b[key].GetType())) return false;
 
@@ -519,6 +535,9 @@ namespace Syroot.NintenTools.Byaml.Dynamic
             if (a.Count != b.Count) return false;
             for (int i = 0; i < a.Count; i++)
             {
+                if ((a[i] == null && b[i] != null) || (a[i] != null && b[i] == null)) return false;
+                else if (a[i] == null && b[i] == null) continue;
+
                 if (TypeNotEqual(a[i].GetType(),b[i].GetType())) return false;
 
                 if (a[i] is IList<dynamic> && IListIsEqual(a[i], b[i])) continue;
