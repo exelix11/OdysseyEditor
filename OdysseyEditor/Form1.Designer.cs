@@ -99,6 +99,9 @@
             this.objectByNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectByModelNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.yAZ0ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -551,6 +554,7 @@
             // otherToolStripMenuItem
             // 
             this.otherToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.yAZ0ToolStripMenuItem,
             this.creatorClassNameTableEditorToolStripMenuItem,
             this.stagesBgmEditorToolStripMenuItem,
             this.toolStripSeparator7,
@@ -767,6 +771,29 @@
             this.splitContainer2.SplitterDistance = 248;
             this.splitContainer2.TabIndex = 17;
             // 
+            // yAZ0ToolStripMenuItem
+            // 
+            this.yAZ0ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.compressToolStripMenuItem,
+            this.decompressToolStripMenuItem});
+            this.yAZ0ToolStripMenuItem.Name = "yAZ0ToolStripMenuItem";
+            this.yAZ0ToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.yAZ0ToolStripMenuItem.Text = "YAZ0";
+            // 
+            // compressToolStripMenuItem
+            // 
+            this.compressToolStripMenuItem.Name = "compressToolStripMenuItem";
+            this.compressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compressToolStripMenuItem.Text = "Compress";
+            this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
+            // 
+            // decompressToolStripMenuItem
+            // 
+            this.decompressToolStripMenuItem.Name = "decompressToolStripMenuItem";
+            this.decompressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.decompressToolStripMenuItem.Text = "Decompress";
+            this.decompressToolStripMenuItem.Click += new System.EventHandler(this.decompressToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -869,6 +896,9 @@
         private System.Windows.Forms.LinkLabel lnk_hideSelectedObjs;
         private System.Windows.Forms.ToolStripMenuItem objectByNameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem objectByModelNameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem yAZ0ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
     }
 }
 

@@ -388,8 +388,32 @@ namespace OdysseyEditor
             AddObj(o, CurList);
             render.LookAt(o.ModelView_Pos);
         }
+        
+        private void compressToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog opn = new OpenFileDialog();
+            if (opn.ShowDialog() == DialogResult.OK)
+            {
+                if (File.Exists(opn.FileName + ".yaz0"))
+                    if (MessageBox.Show($"{opn.FileName}.yaz0 already exists, overwrite it ?", "", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                        return;
+                File.WriteAllBytes(opn.FileName + ".yaz0",YAZ0.Compress(File.ReadAllBytes(opn.FileName)));
+            }
+        }
 
-#region ClipBoard
+        private void decompressToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog opn = new OpenFileDialog();
+            if (opn.ShowDialog() == DialogResult.OK)
+            {
+                if (File.Exists(opn.FileName + ".bin"))
+                    if (MessageBox.Show($"{opn.FileName}.bin already exists, overwrite it ?", "", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                        return;
+                File.WriteAllBytes(opn.FileName + ".bin", YAZ0.Decompress(File.ReadAllBytes(opn.FileName)));
+            }
+        }
+
+        #region ClipBoard
         private void ClipBoardMenu_Opening(object sender, CancelEventArgs e)
         {
             ClipBoardMenu_Paste.Enabled = StoredValue != null;
@@ -963,6 +987,5 @@ namespace OdysseyEditor
                 this.Focus();
             }
         }
-
     }
 }
