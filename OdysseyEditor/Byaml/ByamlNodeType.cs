@@ -53,10 +53,30 @@ namespace Syroot.NintenTools.Byaml
         /// </summary>
         Float = 0xD2,
 
-        /// <summary>
-        /// The node represents <c>null</c>.
-        /// </summary>
-        Null = 0xFF
+		/// <summary>
+		/// The node represents a <see cref="UInt32"/>.
+		/// </summary>
+		Uinteger = 0xD3,
+
+		/// <summary>
+		/// The node represents a <see cref="Int64"/>.
+		/// </summary>
+		Long = 0xD4,
+
+		/// <summary>
+		/// The node represents a <see cref="UInt64"/>.
+		/// </summary>
+		ULong = 0xD5,
+
+		/// <summary>
+		/// The node represents a <see cref="double"/>.
+		/// </summary>
+		Double = 0xD6,
+
+		/// <summary>
+		/// The node represents <c>null</c>.
+		/// </summary>
+		Null = 0xFF
     }
 
     /// <summary>
@@ -89,7 +109,15 @@ namespace Syroot.NintenTools.Byaml
                     return typeof(int);
                 case ByamlNodeType.Float:
                     return typeof(float);
-                case ByamlNodeType.Null:
+				case ByamlNodeType.Uinteger:
+					return typeof(UInt32);
+				case ByamlNodeType.Long:
+					return typeof(Int64);
+				case ByamlNodeType.ULong:
+					return typeof(UInt64);
+				case ByamlNodeType.Double:
+					return typeof(double);
+				case ByamlNodeType.Null:
                     return typeof(object);
                 default:
                     throw new ByamlException($"Unknown node type {nodeType}.");
