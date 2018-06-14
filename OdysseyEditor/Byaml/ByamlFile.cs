@@ -290,13 +290,38 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                         return reader.ReadInt32();
                     case ByamlNodeType.Float:
                         return reader.ReadSingle();
-                    case ByamlNodeType.Null:
+					case ByamlNodeType.Uinteger:
+					case ByamlNodeType.Long:
+					case ByamlNodeType.ULong:
+					case ByamlNodeType.Double:
+						var pos = reader.Position;
+						reader.Seek(reader.ReadUInt32());
+						dynamic value = readLongValFromOffset(nodeType);
+						reader.Position = pos + 4;
+						return value;
+					case ByamlNodeType.Null:
                         reader.Seek(0x4);
                         return null;
                     default:
                         throw new ByamlException($"Unknown node type '{nodeType}'.");
                 }
             }
+
+			dynamic readLongValFromOffset(ByamlNodeType type)
+			{
+				switch (type)
+				{
+					case ByamlNodeType.Uinteger:
+						return reader.ReadUInt32();
+					case ByamlNodeType.Long:
+						return reader.ReadInt64();
+					case ByamlNodeType.ULong:
+						return reader.ReadUInt64();
+					case ByamlNodeType.Double:
+						return reader.ReadDouble();
+				}
+				throw new ByamlException($"Unknown node type '{nodeType}'.");
+			}
         }
 
         private List<dynamic> ReadArrayNode(BinaryDataReader reader, int length, uint offset = 0)
@@ -589,10 +614,15 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     writer.Write(value ? 1 : 0);
                     return null;
                 case ByamlNodeType.Integer:
-                case ByamlNodeType.Float:
-                    writer.Write((float)value);
+				case ByamlNodeType.Float:
+					writer.Write(value);
                     return null;
-                case ByamlNodeType.Null:
+				case ByamlNodeType.Double:
+				case ByamlNodeType.ULong:
+				case ByamlNodeType.Uinteger:
+				case ByamlNodeType.Long:
+					throw new ByamlException($"{type} saving is not implemented yet !!!");
+				case ByamlNodeType.Null:
                     writer.Write(0x0);
                     return null;
                 default:
@@ -821,8 +851,12 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 else if (node is IEnumerable) return ByamlNodeType.Array;
                 else if (node is bool) return ByamlNodeType.Boolean;
                 else if (node is int) return ByamlNodeType.Integer;
-                else if (node is float || node is decimal) return ByamlNodeType.Float;
-                else if (node == null) return ByamlNodeType.Null;
+                else if (node is float) return ByamlNodeType.Float; /*TODO decimal is float or double ? */
+				else if (node is uint) return ByamlNodeType.Uinteger;
+				else if (node is Int64) return ByamlNodeType.Long;
+				else if (node is UInt64) return ByamlNodeType.ULong;
+				else if (node is double) return ByamlNodeType.Double;
+				else if (node == null) return ByamlNodeType.Null;
                 else throw new ByamlException($"Type '{node.GetType()}' is not supported as a BYAML node.");
             }
         }

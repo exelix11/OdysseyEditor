@@ -107,6 +107,11 @@ namespace OdysseyEditor
             render.RotationSensitivity = Properties.Settings.Default.RotSen;
             GameFolder = Properties.Settings.Default.GamePath;
 
+#if DEBUG
+            if (Debugger.IsAttached) this.Text += " - Debugger.IsAttached";
+            else this.Text += " - DEBUG BUILD";            
+#endif
+
             foreach (string file in args)
             {
                 if (File.Exists(file))
@@ -122,6 +127,7 @@ namespace OdysseyEditor
                     }
                 }
             }
+
         }
 
 #if DEBUG
@@ -546,7 +552,7 @@ namespace OdysseyEditor
 #if DEBUG
             saveAsSZSToolStripMenuItem_Click(sender, e); //Let's not risk modifing our precious dump
 #else
-            File.WriteAllBytes(LoadedLevel.Filename, LoadedLevel.SaveSzs());
+            File.WriteAllBytes(LoadedLevel.FilePath, LoadedLevel.SaveSzs());
 #endif
         }
 
