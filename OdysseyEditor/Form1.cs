@@ -144,8 +144,8 @@ namespace OdysseyEditor
 #endif
         string FileOpenArgs = null;
         private void Form1_Load(object sender, EventArgs e)
-        {
-            GamePathAndModelCheck();
+		{
+			GamePathAndModelCheck();
             if (Properties.Settings.Default.CheckUpdates)
                 UpdateCheck.CheckForUpdatesAsync();
 

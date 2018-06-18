@@ -291,11 +291,12 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     case ByamlNodeType.Float:
                         return reader.ReadSingle();
 					case ByamlNodeType.Uinteger:
+						return reader.ReadUInt32();
 					case ByamlNodeType.Long:
 					case ByamlNodeType.ULong:
 					case ByamlNodeType.Double:
 						var pos = reader.Position;
-						reader.Seek(reader.ReadUInt32());
+						reader.Position = reader.ReadUInt32();
 						dynamic value = readLongValFromOffset(nodeType);
 						reader.Position = pos + 4;
 						return value;
@@ -311,8 +312,6 @@ namespace Syroot.NintenTools.Byaml.Dynamic
 			{
 				switch (type)
 				{
-					case ByamlNodeType.Uinteger:
-						return reader.ReadUInt32();
 					case ByamlNodeType.Long:
 						return reader.ReadInt64();
 					case ByamlNodeType.ULong:
@@ -579,7 +578,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
             return !(a.IsAssignableFrom(b) || b.IsAssignableFrom(a)); // without this LinksNode wouldn't be equal to IDictionary<string,dynamic>
         }
 
-        static bool IEnumerableIsEqual(IEnumerable a, IEnumerable b)
+        public static bool IEnumerableIsEqual(IEnumerable a, IEnumerable b)
         {
             if (TypeNotEqual(a.GetType(),b.GetType())) return false;
             if (a is IDictionary) return IDictionaryIsEqual((IDictionary<string, dynamic>)a, (IDictionary<string, dynamic>)b);
@@ -615,13 +614,13 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     return null;
                 case ByamlNodeType.Integer:
 				case ByamlNodeType.Float:
+				case ByamlNodeType.Uinteger:
 					writer.Write(value);
                     return null;
 				case ByamlNodeType.Double:
 				case ByamlNodeType.ULong:
-				case ByamlNodeType.Uinteger:
 				case ByamlNodeType.Long:
-					throw new ByamlException($"{type} saving is not implemented yet !!!");
+					return writer.ReserveOffset();
 				case ByamlNodeType.Null:
                     writer.Write(0x0);
                     return null;
@@ -671,7 +670,12 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     alreadyWrittenNodes.Add(value, (uint)writer.Position);
                     WriteArrayNode(writer, value);
                     break;
-                default:
+				case ByamlNodeType.Double:
+				case ByamlNodeType.ULong:
+				case ByamlNodeType.Long:
+					writer.Write(value);
+					break;
+				default:
                     throw new ByamlException($"{type} not supported as complex node.");
             }
         }
@@ -713,22 +717,18 @@ namespace Syroot.NintenTools.Byaml.Dynamic
 
             // Write the elements, which begin after a padding to the next 4 bytes.
             writer.Align(4);
-            List<Offset> offsets = new List<Offset>();
+            Dictionary<Offset,dynamic> offsets = new Dictionary<Offset, dynamic>();
             foreach (dynamic element in node)
             {
-                offsets.Add(WriteValue(writer, element));
+				var off = WriteValue(writer, element);
+				if (off != null)
+					offsets.Add(off,element);
             }
 
             // Write the contents of complex nodes and satisfy the offsets.
-            int index = 0;
-            foreach (dynamic element in node)
+            foreach (var element in offsets)
             {
-                Offset offset = offsets[index];
-                if (offset != null)
-                {
-                    WriteValueContents(writer, offset, GetNodeType(element), element);
-                }
-                index++;
+               WriteValueContents(writer, element.Key, GetNodeType(element.Value), element.Value);
             }
         }
 
@@ -740,9 +740,9 @@ namespace Syroot.NintenTools.Byaml.Dynamic
             var sortedDict = node.Values.Zip(node.Keys, (Value, Key) => new { Key, Value })
                 .OrderBy(x => x.Key, StringComparer.Ordinal).ToList();
 
-            // Write the key-value pairs.
-            List<Offset> offsets = new List<Offset>(node.Count);
-            foreach (var keyValuePair in sortedDict)
+			// Write the key-value pairs.
+			Dictionary<Offset, dynamic> offsets = new Dictionary<Offset, dynamic>();
+			foreach (var keyValuePair in sortedDict)
             {
                 // Get the index of the key string in the file's name array and write it together with the type.
                 uint keyIndex = (uint)_nameArray.IndexOf(keyValuePair.Key);
@@ -755,20 +755,17 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     writer.Write(keyIndex | (uint)GetNodeType(keyValuePair.Value) << 24);
                 }
 
-                // Write the elements.
-                offsets.Add(WriteValue(writer, keyValuePair.Value));
+				// Write the elements.
+				var off = WriteValue(writer, keyValuePair.Value);
+				if (off != null)
+					offsets.Add(off,keyValuePair.Value);
             }
 
             // Write the value contents.
-            for (int i = 0; i < offsets.Count; i++)
+			foreach (var element in offsets)
             {
-                Offset offset = offsets[i];
-                if (offset != null)
-                {
-                    dynamic value = sortedDict[i].Value;
-                    WriteValueContents(writer, offset, GetNodeType(value), value);
-                }
-            }
+				WriteValueContents(writer, element.Key, GetNodeType(element.Value), element.Value);
+			}
         }
 
         private void WriteStringArrayNode(BinaryDataWriter writer, IEnumerable<string> node)
@@ -852,7 +849,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 else if (node is bool) return ByamlNodeType.Boolean;
                 else if (node is int) return ByamlNodeType.Integer;
                 else if (node is float) return ByamlNodeType.Float; /*TODO decimal is float or double ? */
-				else if (node is uint) return ByamlNodeType.Uinteger;
+				else if (node is uint)	return ByamlNodeType.Uinteger;
 				else if (node is Int64) return ByamlNodeType.Long;
 				else if (node is UInt64) return ByamlNodeType.ULong;
 				else if (node is double) return ByamlNodeType.Double;
