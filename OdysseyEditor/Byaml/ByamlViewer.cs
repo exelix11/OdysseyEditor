@@ -1,4 +1,5 @@
-﻿using Syroot.NintenTools.Byaml.Dynamic;
+﻿using OdysseyEditor;
+using Syroot.NintenTools.Byaml.Dynamic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +32,30 @@ namespace RedCarpet
                 parseArrayNode(byml, treeView1.Nodes);
             }
         }
+
+		//get a reference to the value to change
+		class EditableNode
+		{
+			public Type type { get => Node[Index].GetType(); }
+			dynamic Node;
+			dynamic Index;
+
+			public dynamic Get() => Node[Index];
+			public void Set(dynamic value) => Node[Index] = value;
+			public string GetTreeViewString()
+			{
+				if (Index is int)
+					return Node[Index].ToString();
+				else
+					return Index +" : " + Node[Index].ToString();
+			}
+
+			public EditableNode(dynamic _node, dynamic _index)
+			{
+				Node = _node;
+				Index = _index;
+			}
+		}
         
         void parseDictNode(IDictionary<string, dynamic> node, TreeNodeCollection addto)
         {
@@ -52,15 +77,18 @@ namespace RedCarpet
                 else
                 {
                     current.Text = current.Text + " : " + (node[k] == null  ? "<NULL>" : node[k].ToString());
-                }
+					if (node[k] != null) current.Tag = new EditableNode(node,k);
+				}
             }
         }
 
         void parseArrayNode(IList<dynamic> list, TreeNodeCollection addto)
         {
+			int index = 0;
             foreach (dynamic k in list)
             {
-                if (k is IDictionary<string, dynamic>)
+				index++;
+				if (k is IDictionary<string, dynamic>)
                 {
                     TreeNode current = addto.Add("<Dictionary>");
                     current.Tag = ((IDictionary<string, dynamic>)k);
@@ -74,7 +102,8 @@ namespace RedCarpet
                 }
                 else
                 {
-                    addto.Add(k == null ? "<NULL>" : k.ToString());
+					var n = addto.Add(k == null ? "<NULL>" : k.ToString());
+					if (k != null) n.Tag = new EditableNode(list, index);
                 }
             }
         }
@@ -98,7 +127,8 @@ namespace RedCarpet
         private void ContextMenuOpening(object sender, CancelEventArgs e)
         {
             CopyNode.Enabled = treeView1.SelectedNode != null;
-        }
+			editValueNodeMenuItem.Enabled = treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is EditableNode;
+		}
 
         private void CopyNode_Click(object sender, EventArgs e)
         {
@@ -159,5 +189,28 @@ namespace RedCarpet
                 ByamlFile.Save(sav.FileName, byml);
             }
         }
-    }
+
+		static readonly Dictionary<Type, Action<EditableNode, string>> StringToNode = new Dictionary<Type, Action<EditableNode, string>>()
+		{
+			{ typeof(string) , (n,s) => n.Set(s) },
+			{ typeof(int) , (n,s) => n.Set(int.Parse(s)) },
+			{ typeof(uint) , (n,s) => n.Set(uint.Parse(s)) },
+			{ typeof(long) , (n,s) => n.Set(long.Parse(s)) },
+			{ typeof(ulong) , (n,s) => n.Set(ulong.Parse(s)) },
+			{ typeof(double) , (n,s) => n.Set(double.Parse(s)) },
+			{ typeof(float) , (n,s) => n.Set(float.Parse(s)) },
+		};
+
+		private void editValueNodeMenuItem_Click(object sender, EventArgs e)
+		{
+			var node = treeView1.SelectedNode.Tag as EditableNode;
+			if (node == null) return;
+			string value = node.Get().ToString();
+			var dRes = InputDialog.Show("Enter value", $"Enter new value for the node, the value must be of type {node.type}", ref value);
+			if (dRes != DialogResult.OK) return;
+			if (value.Trim() == "") return;
+			StringToNode[node.type](node, value);
+			treeView1.SelectedNode.Text = node.GetTreeViewString();
+		}
+	}
 }
