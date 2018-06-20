@@ -213,7 +213,9 @@ namespace OdysseyEditor
         {
             UnloadLevel();
 #if DEBUG
-            LoadedLevel = new Level(path, 0);
+            LoadedLevel = new Level(path,
+				Debugger.IsAttached && 
+				Control.ModifierKeys != Keys.Control ? 0 : -1);
 #else
             LoadedLevel = new Level(path, -1);
 #endif
