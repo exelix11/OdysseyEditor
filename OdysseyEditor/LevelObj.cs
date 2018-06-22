@@ -28,7 +28,8 @@ namespace OdysseyEditor
         public const string N_Id = "Id";
         public const string N_Name = "UnitConfigName";
         public const string N_ModelName = "ModelName";
-        public const string N_Links = "Links";
+        public const string N_Links = "Links"; 
+		public static readonly string[] ReservedNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_ModelName, N_Links };
 
         public Dictionary<string, dynamic> Prop = new Dictionary<string, dynamic>();
 
@@ -36,7 +37,7 @@ namespace OdysseyEditor
         {
             if (bymlNode is Dictionary<string, dynamic>) Prop = (Dictionary<string, dynamic>)bymlNode;
             else throw new Exception("Not a dictionary");
-            if (Prop.ContainsKey(N_Links)) Prop[N_Links] = new LinksNode(Prop[N_Links]);
+            if (Prop.ContainsKey(N_Links) && !(Prop[N_Links] is LinksNode)) Prop[N_Links] = new LinksNode(Prop[N_Links]);
         }
 
         public LevelObj(bool empty = false)
@@ -73,7 +74,9 @@ namespace OdysseyEditor
             }
         }
 
-        public Vector3D Pos
+		public bool ContainsKey(string name) => Prop.ContainsKey(name);
+
+		public Vector3D Pos
         {
             get { return new Vector3D(this[N_Translate]["X"], this[N_Translate]["Y"], this[N_Translate]["Z"]); }
             set {

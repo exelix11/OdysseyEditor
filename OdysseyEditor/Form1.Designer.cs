@@ -124,7 +124,7 @@
 			this.button5.TabIndex = 2;
 			this.button5.Text = "Remove selected property";
 			this.button5.UseVisualStyleBackColor = true;
-			this.button5.Visible = false;
+			this.button5.Click += new System.EventHandler(this.button5_Click);
 			// 
 			// splitContainer1
 			// 
@@ -320,7 +320,7 @@
 			this.button4.TabIndex = 1;
 			this.button4.Text = "Add property";
 			this.button4.UseVisualStyleBackColor = true;
-			this.button4.Visible = false;
+			this.button4.Click += new System.EventHandler(this.button4_Click);
 			// 
 			// propertyGrid1
 			// 
@@ -497,8 +497,8 @@
             this.openBymlToolStripMenuItem,
             this.importFromJsonToolStripMenuItem});
 			this.byamlConverterViewerToolStripMenuItem.Name = "byamlConverterViewerToolStripMenuItem";
-			this.byamlConverterViewerToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-			this.byamlConverterViewerToolStripMenuItem.Text = "Byml converter/Viewer";
+			this.byamlConverterViewerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.byamlConverterViewerToolStripMenuItem.Text = "Byml Editor/Viewer";
 			// 
 			// openBymlToolStripMenuItem
 			// 
@@ -887,8 +887,6 @@
         private System.Windows.Forms.ToolStripMenuItem switchDeadOnToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem objectByViewIdToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.Panel ListEditingPanel;
-        private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.ToolStripMenuItem ClipBoardMenu_CopyTransform;
         private System.Windows.Forms.ToolStripMenuItem byamlConverterViewerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openBymlToolStripMenuItem;
@@ -900,6 +898,8 @@
         private System.Windows.Forms.ToolStripMenuItem yAZ0ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
-    }
+		private System.Windows.Forms.Panel ListEditingPanel;
+		private System.Windows.Forms.LinkLabel linkLabel1;
+	}
 }
 

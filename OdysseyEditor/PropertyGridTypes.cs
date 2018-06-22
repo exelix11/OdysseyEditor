@@ -74,8 +74,12 @@ namespace RedCarpet
 
             public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
             {
-                var dict = (Dictionary<string, dynamic>)value;
-                return dict["X"] + ";" + dict["Y"] + ";" + dict["Z"];
+				string res = "";
+				foreach (dynamic k in (IEnumerable)value)
+				{
+					res += k.Value + ";";
+				}
+				return res;
             }
         }
 

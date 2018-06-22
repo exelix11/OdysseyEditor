@@ -76,15 +76,21 @@ namespace ModelViewer
         {
             get { return ModelView.RotationSensitivity; }
             set { ModelView.RotationSensitivity = value; }
-        }        
+        }
 
-        public RendererControl()
+		public double FarPlaneDistance
+		{
+			get { return ModelView.Camera.FarPlaneDistance; }
+			set { ModelView.Camera.FarPlaneDistance = value; }
+		}
+
+		public RendererControl()
         {
             InitializeComponent();
             ModelViewer.SortingFrequency = 0.5;
             ModelView.Children.Add(ModelViewer);
             ModelView.Camera.NearPlaneDistance = 1;
-            ModelView.ClipToBounds = false;
+			ModelView.ClipToBounds = false;
         }
         
         public void Clear()

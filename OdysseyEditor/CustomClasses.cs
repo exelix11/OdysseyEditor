@@ -90,6 +90,61 @@ namespace OdysseyEditor
         }
     }
 
+	public static class IEnumerableCompare
+	{
+
+		private static bool IDictionaryIsEqual(IDictionary<string, dynamic> a, IDictionary<string, dynamic> b)
+		{
+			if (a.Count != b.Count) return false;
+			foreach (string key in a.Keys)
+			{
+				if (!b.ContainsKey(key)) return false;
+				if ((a[key] == null && b[key] != null) || (a[key] != null && b[key] == null)) return false;
+				else if (a[key] == null && b[key] == null) continue;
+
+				if (TypeNotEqual(a[key].GetType(), b[key].GetType())) return false;
+
+				if (a[key] is IList<dynamic> && IListIsEqual(a[key], b[key])) continue;
+				else if (a[key] is IDictionary<string, dynamic> && IDictionaryIsEqual(a[key], b[key])) continue;
+				else if (a[key] == b[key]) continue;
+
+				return false;
+			}
+			return true;
+		}
+
+		private static bool IListIsEqual(IList<dynamic> a, IList<dynamic> b)
+		{
+			if (a.Count != b.Count) return false;
+			for (int i = 0; i < a.Count; i++)
+			{
+				if ((a[i] == null && b[i] != null) || (a[i] != null && b[i] == null)) return false;
+				else if (a[i] == null && b[i] == null) continue;
+
+				if (TypeNotEqual(a[i].GetType(), b[i].GetType())) return false;
+
+				if (a[i] is IList<dynamic> && IListIsEqual(a[i], b[i])) continue;
+				else if (a[i] is IDictionary<string, dynamic> && IDictionaryIsEqual(a[i], b[i])) continue;
+				else if (a[i] == b[i]) continue;
+
+				return false;
+			}
+			return true;
+		}
+
+		public static bool TypeNotEqual(Type a, Type b)
+		{
+			return !(a.IsAssignableFrom(b) || b.IsAssignableFrom(a)); // without this LinksNode wouldn't be equal to IDictionary<string,dynamic>
+		}
+
+		public static bool IsEqual(IEnumerable a, IEnumerable b)
+		{
+			if (TypeNotEqual(a.GetType(), b.GetType())) return false;
+			if (a is IDictionary) return IDictionaryIsEqual((IDictionary<string, dynamic>)a, (IDictionary<string, dynamic>)b);
+			else return IListIsEqual((IList<dynamic>)a, (IList<dynamic>)b);
+		}
+	}
+
     class CustomStringWriter : System.IO.StringWriter
     {
         private readonly Encoding encoding;
