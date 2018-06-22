@@ -29,9 +29,14 @@ namespace OdysseyEditor
         public const string N_Name = "UnitConfigName";
         public const string N_ModelName = "ModelName";
         public const string N_Links = "Links"; 
-		public static readonly string[] ReservedNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_ModelName, N_Links };
+		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links };
 
-        public Dictionary<string, dynamic> Prop = new Dictionary<string, dynamic>();
+		public const string N_UnitConfig = "UnitConfig";
+		public const string N_UnitConfigPos = "DisplayTranslate";
+		public const string N_UnitConfigRot = "DisplayRotate";
+		public const string N_UnitConfigScale = "DisplayScale";
+
+		public Dictionary<string, dynamic> Prop = new Dictionary<string, dynamic>();
 
         public LevelObj(dynamic bymlNode)
         {
@@ -58,7 +63,20 @@ namespace OdysseyEditor
             Prop.Add(N_Links, new LinksNode());
             this[N_Name] = "newObj";
             this[N_Id] = "obj0";
-        }
+			Prop.Add(N_UnitConfig, new Dictionary<string, dynamic>());
+			Prop[N_UnitConfig].Add(N_UnitConfigPos, new Dictionary<string, dynamic>());
+			Prop[N_UnitConfig][N_UnitConfigPos].Add("X", (Single)0);
+			Prop[N_UnitConfig][N_UnitConfigPos].Add("Y", (Single)0);
+			Prop[N_UnitConfig][N_UnitConfigPos].Add("Z", (Single)0);
+			Prop[N_UnitConfig].Add(N_UnitConfigRot, new Dictionary<string, dynamic>());
+			Prop[N_UnitConfig][N_UnitConfigRot].Add("X", (Single)0);
+			Prop[N_UnitConfig][N_UnitConfigRot].Add("Y", (Single)0);
+			Prop[N_UnitConfig][N_UnitConfigRot].Add("Z", (Single)0);
+			Prop[N_UnitConfig].Add(N_UnitConfigScale, new Dictionary<string, dynamic>());
+			Prop[N_UnitConfig][N_UnitConfigScale].Add("X", (Single)1);
+			Prop[N_UnitConfig][N_UnitConfigScale].Add("Y", (Single)1);
+			Prop[N_UnitConfig][N_UnitConfigScale].Add("Z", (Single)1);
+		}
 
         public dynamic this [string name]
         {
