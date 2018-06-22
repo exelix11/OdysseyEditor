@@ -85,11 +85,18 @@
       <DependentUpon>ByamlViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="CustomClasses.cs" />
+    <Compile Include="DebugOnlyStuff\GrabObjectData.cs" />
     <Compile Include="EditorFroms\AddObjList.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EditorFroms\AddObjList.Designer.cs">
       <DependentUpon>AddObjList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditorFroms\AddPropertyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorFroms\AddPropertyDialog.Designer.cs">
+      <DependentUpon>AddPropertyDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorFroms\LinksEditor.cs">
       <SubType>Form</SubType>
@@ -141,6 +148,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorFroms\AddObjList.resx">
       <DependentUpon>AddObjList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorFroms\AddPropertyDialog.resx">
+      <DependentUpon>AddPropertyDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorFroms\LinksEditor.resx">
       <DependentUpon>LinksEditor.cs</DependentUpon>

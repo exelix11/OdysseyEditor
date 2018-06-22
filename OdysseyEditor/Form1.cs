@@ -144,7 +144,7 @@ namespace OdysseyEditor
 #endif
         string FileOpenArgs = null;
         private void Form1_Load(object sender, EventArgs e)
-		{
+		{			
 			GamePathAndModelCheck();
             if (Properties.Settings.Default.CheckUpdates)
                 UpdateCheck.CheckForUpdatesAsync();
@@ -267,7 +267,7 @@ namespace OdysseyEditor
             findToolStripMenuItem.Visible = true;
         }
 
-        bool NoModels = true; //Debug only
+        bool NoModels = false; //Debug only
         List<string> SkipModels = null;
         string GetModelName(string ObjName) //convert bfres to obj and cache in models folder
         {
@@ -370,7 +370,7 @@ namespace OdysseyEditor
         {
             if (SelectionCount < 0) { MessageBox.Show("No object selected in the list"); return; }
             {
-                string name = e.ChangedItem.Label;
+                string name = e.ChangedItem.Label;				
                 if (name == LevelObj.N_Name || name == LevelObj.N_ModelName || name == "Name")
                 {
                     string path = GetModelName(SelectedObj.ModelName);
@@ -615,12 +615,83 @@ namespace OdysseyEditor
 
         private void openBymlToolStripMenuItem_Click(object sender, EventArgs e) => ByamlViewer.OpenByml();
         private void importFromJsonToolStripMenuItem_Click(object sender, EventArgs e) => ByamlViewer.ImportFromJson();
-#endregion
+		#endregion
 
-        //Property grid change, listbox, combobox, show/hide
-#region EditorControlsEvents
+		//Property grid change, listbox, combobox, show/hide
+		#region EditorControlsEvents
 
-        private void lnk_hideSelectedObjs_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		List<string> PropertyGridGetPath()
+		{
+			var item = propertyGrid1.SelectedGridItem;
+			if (item == null) return null;
+			List<string> SelectedPath = new List<string>();
+			while (item.Parent.Parent.Parent != null) //t.Parent.Parent.Parent is properties 
+			{
+				SelectedPath.Add(item.Label);
+				item = item.Parent;
+			}
+			return SelectedPath;
+		}
+
+		private void button5_Click(object sender, EventArgs e)
+		{
+			var SelectedPath = PropertyGridGetPath();
+			if (SelectedPath.Count == 0 ||
+				(SelectedPath.Count == 1 && LevelObj.ReservedNames.Contains(SelectedPath[0])))
+			{
+				MessageBox.Show("Can't remove this property");
+				return;
+			}
+			foreach (var o in SelectedObjs)
+			{
+				dynamic d = o.Prop;
+				for (int i = SelectedPath.Count-1; i > 0; i--)
+					d = d[SelectedPath[i]];
+				if (d is Dictionary<string, dynamic>)
+					((Dictionary<string,dynamic>)d).Remove(SelectedPath[0]);
+				else if (d is List<dynamic>)
+				{
+					for (int i = 0; i < propertyGrid1.SelectedGridItem.Parent.GridItems.Count; i++) //Get the index of the selected item
+						if (propertyGrid1.SelectedGridItem == propertyGrid1.SelectedGridItem.Parent.GridItems[i])
+						{
+							((List<dynamic>)d).RemoveAt(i);
+							break;
+						}
+				}
+			}
+			propertyGrid1.Refresh();
+		}
+
+		
+
+		private void button4_Click(object sender, EventArgs e)
+		{
+			var newProp = AddPropertyDialog.newProperty(!(propertyGrid1.SelectedGridItem.Value is List<dynamic>));
+			if (newProp == null) return;
+			var path = PropertyGridGetPath();
+
+			bool clone = newProp.Item2 is Dictionary<string, dynamic> || newProp.Item2 is List<dynamic>; //reference types must be manually cloned
+			
+			foreach (var o in SelectedObjs)
+			{
+				var toAdd = clone ? DeepCloneDictArr.DeepClone(newProp.Item2) : newProp.Item2;
+
+				if (path == null)
+					o.Prop.Add(newProp.Item1, toAdd);
+				else
+				{
+					dynamic target = o.Prop;
+					for (int i = path.Count - 1; i >= 0; i--)
+						target = target[path[i]];
+					if (target is List<dynamic>)
+						((List<dynamic>)target).Add(toAdd);
+					else if (target is Dictionary<string, dynamic>)
+						((Dictionary<string, dynamic>)target).Add(newProp.Item1, toAdd);
+				}
+			}
+		}
+
+		private void lnk_hideSelectedObjs_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (CurList.IsHidden) return;
             foreach (var o in SelectedObjs)
@@ -680,8 +751,7 @@ namespace OdysseyEditor
                 return;
             }
 
-            if (SelectionCount == 1) propertyGrid1.SelectedObject = ((LevelObj)SelectedObj);
-            else propertyGrid1.SelectedObject = null;
+            propertyGrid1.SelectedObjects = SelectedObjs;
 
             if (CurList.IsHidden)
             {
@@ -799,35 +869,36 @@ namespace OdysseyEditor
             if (RenderIsDragging) return;
             if (e.Key == Key.B && EditingList) PreviousList();
             if (SelectionCount == 0) return;
-            if (e.Key == Key.Space) render.LookAt(SelectedObj.ModelView_Pos);
-            else if (e.Key == Key.OemPlus && Btn_AddObj.Enabled) Btn_AddObj_Click(null, null);
-            else if (e.Key == Key.D && SelectionCount == 1) DuplicateObj(SelectedObj, CurList);
-            else if (e.Key == Key.Delete) btn_delObj_Click(null, null);
-            else if (e.Key == Key.F) findToolStripMenuItem.ShowDropDown();
-            else if (e.Key == Key.H) lnk_hideSelectedObjs_LinkClicked(null, null);
-            else if (e.Key == Key.Z && UndoList.Count > 0) UndoList.Pop().Undo();
-            else if (e.Key == Key.C && SelectionCount == 1)
-            {
-                if (SelectedObj[LevelObj.N_Links] != null)
-                {
-                    var BakLinks = ((LinksNode)SelectedObj[LevelObj.N_Links]).Clone();
+			if (e.Key == Key.Space) render.LookAt(SelectedObj.ModelView_Pos);
+			else if (e.Key == Key.OemPlus && Btn_AddObj.Enabled) Btn_AddObj_Click(null, null);
+			else if (e.Key == Key.D && SelectionCount == 1) DuplicateObj(SelectedObj, CurList);
+			else if (e.Key == Key.Delete) btn_delObj_Click(null, null);
+			else if (e.Key == Key.F) findToolStripMenuItem.ShowDropDown();
+			else if (e.Key == Key.H) lnk_hideSelectedObjs_LinkClicked(null, null);
+			else if (e.Key == Key.Z && UndoList.Count > 0) UndoList.Pop().Undo();
+			else if (e.Key == Key.Q) render.CamMode = render.CamMode == HelixToolkit.Wpf.CameraMode.Inspect ? HelixToolkit.Wpf.CameraMode.WalkAround : HelixToolkit.Wpf.CameraMode.Inspect;
+			else if (e.Key == Key.C && SelectionCount == 1)
+			{
+				if (SelectedObj[LevelObj.N_Links] != null)
+				{
+					var BakLinks = ((LinksNode)SelectedObj[LevelObj.N_Links]).Clone();
 
-                    AddToUndo((dynamic arg) =>
-                    {
-                        ((LevelObj)arg[0])[LevelObj.N_Links] = arg[1];
-                    },
-                        $"Edited links of {SelectedObj.ToString()}",
-                        new dynamic[] { SelectedObj, BakLinks });
+					AddToUndo((dynamic arg) =>
+					{
+						((LevelObj)arg[0])[LevelObj.N_Links] = arg[1];
+					},
+						$"Edited links of {SelectedObj.ToString()}",
+						new dynamic[] { SelectedObj, BakLinks });
 
-                    new EditorFroms.LinksEditor(SelectedObj[LevelObj.N_Links]).ShowDialog();
-                }
-            }
+					new EditorFroms.LinksEditor(SelectedObj[LevelObj.N_Links]).ShowDialog();
+				}
+			}
 #if DEBUG
-            else if (e.Key == Key.P)
-                foreach (ObjList l in LoadedLevel.objs.Values)
-                    foreach (LevelObj o in l) UpdateModelPosition(o);
+			else if (e.Key == Key.P)
+				foreach (ObjList l in LoadedLevel.objs.Values)
+					foreach (LevelObj o in l) UpdateModelPosition(o);
 #endif
-            else return;
+			else return;
         }
 
         const int UndoMax = 30;
@@ -995,5 +1066,6 @@ namespace OdysseyEditor
                 this.Focus();
             }
         }
-    }
+
+	}
 }

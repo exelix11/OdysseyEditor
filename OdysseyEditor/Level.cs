@@ -45,23 +45,24 @@ namespace OdysseyEditor
     public class Level
     {
         public Dictionary<string, byte[]> SzsFiles;
-        public Dictionary<string, ObjList> objs = new Dictionary<string, ObjList>();
+        public Dictionary<string, ObjList> objs = null;
         public dynamic LoadedByml = null;
         public string FilePath = "";
         int _ScenarioIndex = -1;
+		public int ScenarioCount => LoadedByml.Count;
 
-        public static int HighestID = 0;
+		public static int HighestID = 0;
 
         public Level(bool empty, string levelN)
         {
             if (!empty) throw new Exception();
             SzsFiles = new Dictionary<string, byte[]>();
             FilePath = levelN;
-            LoadedByml = new dynamic[15];
+            LoadedByml = new List<dynamic>();
             for (int i = 0; i < 15; i++)
                 LoadedByml[i] = new Dictionary<string, dynamic>();
             SzsFiles.Add(Path.GetFileNameWithoutExtension(FilePath) + ".byml", ByamlFile.Save(LoadedByml,false, Syroot.BinaryData.ByteOrder.LittleEndian));
-            LoadObjects();
+			LoadByml();
         }
 
         public Level (string path, int scenarioIndex = -1)
@@ -73,18 +74,25 @@ namespace OdysseyEditor
         void Load(byte[] file, int scenarioIndex = -1)
         {
             SzsFiles = new SARC().unpackRam(YAZ0.Decompress(file));
-            LoadObjects(scenarioIndex);
+			LoadByml(scenarioIndex);
         }
 
-        void LoadObjects(int scenarioIndex = -1)
-        {
-            Stream s = new MemoryStream(SzsFiles[Path.GetFileNameWithoutExtension(FilePath) + ".byml"]);
-            LoadedByml = ByamlFile.Load(s,false, Syroot.BinaryData.ByteOrder.LittleEndian);
+		void LoadByml(int scenarioIndex = -1)
+		{
+			Stream s = new MemoryStream(SzsFiles[Path.GetFileNameWithoutExtension(FilePath) + ".byml"]);
+			LoadedByml = ByamlFile.Load(s, false, Syroot.BinaryData.ByteOrder.LittleEndian);
 
-            if (scenarioIndex == -1)
+			LoadObjects(scenarioIndex);
+		}
+
+		void LoadObjects(int scenarioIndex = -1)
+        {
+			objs = new Dictionary<string, ObjList>();
+
+			if (scenarioIndex == -1)
             {
                 string res = "0";
-                InputDialog.Show("Select scenario", $"enter scenario value [0,{LoadedByml.Count- 1}]", ref res);
+                InputDialog.Show("Select scenario", $"enter scenario value [0,{ScenarioCount - 1}]", ref res);
                 if (!int.TryParse(res, out scenarioIndex)) scenarioIndex = 0;
             }
 
@@ -97,6 +105,20 @@ namespace OdysseyEditor
                 objs.Add(k, new ObjList(k,Scenario[k]));
             }
         }
+
+		public void SwitchScenario(int newScenario = -1)
+		{
+			if (newScenario == -1)
+			{
+				string res = "0";
+				var dialogResult = InputDialog.Show("Select scenario", $"enter scenario value [0,{LoadedByml.Count - 1}]", ref res);
+				if (dialogResult != System.Windows.Forms.DialogResult.OK) return;
+				if (!int.TryParse(res, out newScenario)) newScenario = 0;
+			}
+			if (_ScenarioIndex == newScenario) return;
+			_ScenarioIndex = newScenario;
+			LoadObjects(newScenario);
+		}
 
         public void OpenBymlViewer()
         {

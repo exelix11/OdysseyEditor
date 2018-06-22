@@ -1,4 +1,6 @@
 ﻿using OdysseyEditor;
+using OdysseyEditor.EditorFroms;
+using Syroot.NintenTools.Byaml;
 using Syroot.NintenTools.Byaml.Dynamic;
 using System;
 using System.Collections.Generic;
@@ -190,17 +192,6 @@ namespace RedCarpet
             }
         }
 
-		static readonly Dictionary<Type, Action<EditableNode, string>> StringToNode = new Dictionary<Type, Action<EditableNode, string>>()
-		{
-			{ typeof(string) , (n,s) => n.Set(s) },
-			{ typeof(int) , (n,s) => n.Set(int.Parse(s)) },
-			{ typeof(uint) , (n,s) => n.Set(uint.Parse(s)) },
-			{ typeof(long) , (n,s) => n.Set(long.Parse(s)) },
-			{ typeof(ulong) , (n,s) => n.Set(ulong.Parse(s)) },
-			{ typeof(double) , (n,s) => n.Set(double.Parse(s)) },
-			{ typeof(float) , (n,s) => n.Set(float.Parse(s)) },
-		};
-
 		private void editValueNodeMenuItem_Click(object sender, EventArgs e)
 		{
 			var node = treeView1.SelectedNode.Tag as EditableNode;
@@ -209,8 +200,83 @@ namespace RedCarpet
 			var dRes = InputDialog.Show("Enter value", $"Enter new value for the node, the value must be of type {node.type}", ref value);
 			if (dRes != DialogResult.OK) return;
 			if (value.Trim() == "") return;
-			StringToNode[node.type](node, value);
+			node.Set(ByamlTypeHelper.ConvertValue(node.type,value));
 			treeView1.SelectedNode.Text = node.GetTreeViewString();
+		}
+
+		private void addNodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			dynamic target = treeView1.SelectedNode.Tag;
+			var targetNodeCollection = treeView1.SelectedNode.Nodes;
+
+			if (treeView1.SelectedNode == null)
+			{
+				target = byml;
+				targetNodeCollection = treeView1.Nodes;
+			}
+			else if (target is EditableNode)
+			{
+				if (treeView1.SelectedNode.Parent == null)
+				{
+					target = byml;
+					targetNodeCollection = treeView1.Nodes;
+				}
+				else
+				{
+					target = treeView1.SelectedNode.Parent.Tag;
+					targetNodeCollection = treeView1.SelectedNode.Parent.Nodes;
+				}
+			}
+
+			var newProp = AddPropertyDialog.newProperty(!(target is List<dynamic>));
+			if (newProp == null) return;
+			bool clone = newProp.Item2 is Dictionary<string, dynamic> || newProp.Item2 is List<dynamic>; //reference types must be manually cloned
+			var toAdd = clone ? DeepCloneDictArr.DeepClone(newProp.Item2) : newProp.Item2;
+
+			targetNodeCollection.Clear();
+
+			if (target is List<dynamic>)
+			{
+				((List<dynamic>)target).Add(toAdd);
+				parseArrayNode((List<dynamic>)target, targetNodeCollection);
+			}
+			else if (target is Dictionary<string, dynamic>)
+			{
+				((Dictionary<string, dynamic>)target).Add(newProp.Item1, toAdd);
+				parseDictNode((Dictionary<string, dynamic>)target, targetNodeCollection);
+			}
+			else throw new Exception();
+
+		}
+
+		private void deleteNodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (treeView1.SelectedNode == null)
+			{
+				MessageBox.Show("Select a node first");
+				return;
+			}
+
+			dynamic target;
+			TreeNodeCollection targetNode;
+			if (treeView1.SelectedNode.Parent == null)
+			{
+				target = byml;
+				targetNode = treeView1.Nodes;
+			}
+			else
+			{
+				target = treeView1.SelectedNode.Parent.Tag;
+				targetNode = treeView1.SelectedNode.Parent.Nodes;
+			}
+			int index = targetNode.IndexOf(treeView1.SelectedNode);
+			if (target is Dictionary<string, dynamic>)
+			{
+				target.Remove(((Dictionary<string, dynamic>)target).Keys.ToArray()[index]);
+			}
+			else
+				target.RemoveAt(targetNode.IndexOf(treeView1.SelectedNode));
+			targetNode.RemoveAt(index);
 		}
 	}
 }

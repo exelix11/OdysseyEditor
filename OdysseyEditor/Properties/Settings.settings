@@ -44,5 +44,8 @@
     <Setting Name="UpgradeSettings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="FarPlaneDistance" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">100000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

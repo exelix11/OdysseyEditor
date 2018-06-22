@@ -1,4 +1,8 @@
-﻿using System;
+﻿//FASTLOAD: allow to reuse node references, loads faster and uses less ram but editing a single field might change other stuff
+#if DEBUG
+#define FASTLOAD
+#endif
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,9 +10,8 @@ using System.Linq;
 using System.Text;
 using Syroot.BinaryData;
 using Syroot.Maths;
-using System.Globalization;
+using OdysseyEditor;
 using System.Diagnostics;
-using ExtensionMethods;
 
 namespace Syroot.NintenTools.Byaml.Dynamic
 {
@@ -111,7 +114,10 @@ namespace Syroot.NintenTools.Byaml.Dynamic
         public static void Save(Stream stream, dynamic root, bool supportPaths = false,
             ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            ByamlFile byamlFile = new ByamlFile(supportPaths, byteOrder);
+#if FASTLOAD
+			Debug.Assert(false, "FASTLOAD (shared node references) is enabled, the saved file might have unexpected edits.\r\nTo build without FASTLOAD edit Byaml/ByamlFile.cs");
+#endif
+			ByamlFile byamlFile = new ByamlFile(supportPaths, byteOrder);
             byamlFile.Write(stream, root);
         }
 
@@ -180,7 +186,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                     if (reader.ReadUInt16() != _magicBytes) throw new Exception("Header mismatch");
                     else System.Windows.MessageBox.Show("Unexpected ByteOrder");
                 }
-                if (reader.ReadUInt16() != 0x0001) System.Diagnostics.Debug.WriteLine("Unsupported BYAML version.");// throw new ByamlException("Unsupported BYAML version.");
+				if (reader.ReadUInt16() != 0x0001) { } // System.Diagnostics.Debug.WriteLine("Unsupported BYAML version.");// throw new ByamlException("Unsupported BYAML version.");
                 uint nameArrayOffset = reader.ReadUInt32();
                 uint stringArrayOffset = reader.ReadUInt32();
                 uint pathArrayOffset = 0;
@@ -217,11 +223,13 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 reader.Seek(rootNodeOffset, SeekOrigin.Begin);
                 return ReadNode(reader,0);
             }
-        }        
-        
-        //Node references are disabled since it leads to multiple objects sharing the same values for different fields (eg. a position node can be shared between multiple objects)
-        //private Dictionary<uint, dynamic> AlreadyReadNodes = new Dictionary<uint, dynamic>(); //Offset in the file, reference to node
-        private dynamic ReadNode(BinaryDataReader reader, ByamlNodeType nodeType = 0)
+        }
+
+		//Node references are disabled since it leads to multiple objects sharing the same values for different fields (eg. a position node can be shared between multiple objects)
+#if FASTLOAD
+		private Dictionary<uint, dynamic> AlreadyReadNodes = new Dictionary<uint, dynamic>(); //Offset in the file, reference to node
+#endif
+		private dynamic ReadNode(BinaryDataReader reader, ByamlNodeType nodeType = 0)
         {
             // Read the node type if it has not been provided yet.
             bool nodeTypeGiven = nodeType != 0;
@@ -238,10 +246,12 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 {
                     // If the node type was given, the array value is read from an offset.
                     offset = reader.ReadUInt32();
-                    //if (AlreadyReadNodes.ContainsKey(offset))
-                    //{
-                    //    return AlreadyReadNodes[offset];
-                    //}
+					#if FASTLOAD
+					if (AlreadyReadNodes.ContainsKey(offset))
+                    {
+                        return AlreadyReadNodes[offset];
+                    }
+					#endif
                     oldPos = reader.Position;
                     reader.Seek(offset, SeekOrigin.Begin);
                 }
@@ -326,8 +336,10 @@ namespace Syroot.NintenTools.Byaml.Dynamic
         private List<dynamic> ReadArrayNode(BinaryDataReader reader, int length, uint offset = 0)
         {
             List<dynamic> array = new List<dynamic>(length);
-            
-            //if (offset != 0) AlreadyReadNodes.Add(offset, array);
+
+			#if FASTLOAD
+            if (offset != 0) AlreadyReadNodes.Add(offset, array);
+			#endif
             // Read the element types of the array.
             byte[] nodeTypes = reader.ReadBytes(length);
             // Read the elements, which begin after a padding to the next 4 bytes.
@@ -343,8 +355,10 @@ namespace Syroot.NintenTools.Byaml.Dynamic
         private Dictionary<string, dynamic> ReadDictionaryNode(BinaryDataReader reader, int length, uint offset = 0)
         {
             Dictionary<string, dynamic> dictionary = new Dictionary<string, dynamic>();
-            //if (offset != 0) AlreadyReadNodes.Add(offset, dictionary);
-            // Read the elements of the dictionary.
+			#if FASTLOAD
+			if (offset != 0) AlreadyReadNodes.Add(offset, dictionary);
+			#endif
+			// Read the elements of the dictionary.
             for (int i = 0; i < length; i++)
             {
                 uint indexAndType = reader.ReadUInt32();
@@ -486,7 +500,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
         private void CollectNodeArrayContents(dynamic node,ref List<dynamic> alreadyCollected)
         {
             if (node == null) return;
-            foreach (var o in alreadyCollected.Where(x => !TypeNotEqual(x.GetType(),node.GetType())))
+            foreach (var o in alreadyCollected.Where(x => !IEnumerableCompare.TypeNotEqual(x.GetType(),node.GetType())))
             {
                 if (node is string)
                 {
@@ -495,7 +509,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 }
                 else if (node is IEnumerable)
                 {
-                    if (IEnumerableIsEqual(node, o))
+                    if (IEnumerableCompare.IsEqual(node, o))
                         return;
                 }
                 else if (node == o)
@@ -533,58 +547,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 }
             }
         }
-
-        private static bool IDictionaryIsEqual(IDictionary<string, dynamic> a, IDictionary<string, dynamic> b)
-        {
-            if (a.Count != b.Count)  return false;
-            foreach (string key in a.Keys)
-            {
-                if (!b.ContainsKey(key)) return false;
-                if ((a[key] == null && b[key] != null) || (a[key] != null && b[key] == null)) return false;
-                else if (a[key] == null && b[key] == null) continue;
-
-                if (TypeNotEqual(a[key].GetType(),b[key].GetType())) return false;
-
-                if (a[key] is IList<dynamic> && IListIsEqual(a[key], b[key])) continue;
-                else if (a[key] is IDictionary<string, dynamic> && IDictionaryIsEqual(a[key], b[key])) continue;
-                else if (a[key] == b[key]) continue;
-
-                return false;
-            }
-            return true;
-        }
-
-        private static bool IListIsEqual(IList<dynamic> a, IList<dynamic> b)
-        {
-            if (a.Count != b.Count) return false;
-            for (int i = 0; i < a.Count; i++)
-            {
-                if ((a[i] == null && b[i] != null) || (a[i] != null && b[i] == null)) return false;
-                else if (a[i] == null && b[i] == null) continue;
-
-                if (TypeNotEqual(a[i].GetType(),b[i].GetType())) return false;
-
-                if (a[i] is IList<dynamic> && IListIsEqual(a[i], b[i])) continue;
-                else if (a[i] is IDictionary<string, dynamic> && IDictionaryIsEqual(a[i], b[i])) continue;
-                else if (a[i] == b[i]) continue;
-
-                return false;
-            }
-            return true;
-        }
-
-        static bool TypeNotEqual(Type a, Type b)
-        {
-            return !(a.IsAssignableFrom(b) || b.IsAssignableFrom(a)); // without this LinksNode wouldn't be equal to IDictionary<string,dynamic>
-        }
-
-        public static bool IEnumerableIsEqual(IEnumerable a, IEnumerable b)
-        {
-            if (TypeNotEqual(a.GetType(),b.GetType())) return false;
-            if (a is IDictionary) return IDictionaryIsEqual((IDictionary<string, dynamic>)a, (IDictionary<string, dynamic>)b);
-            else return IListIsEqual((IList<dynamic>)a, (IList<dynamic>)b);
-        }
-
+		
         Dictionary<dynamic, uint> alreadyWrittenNodes = new Dictionary<dynamic, uint>();
         private Offset WriteValue(BinaryDataWriter writer, dynamic value)
         {
@@ -602,7 +565,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
                 case ByamlNodeType.Array:
                     foreach (var d in alreadyWrittenNodes.Keys.Where(x => x is IEnumerable && x.Count == value.Count))
                     {
-                        if (IEnumerableIsEqual(d, value))
+                        if (IEnumerableCompare.IsEqual(d, value))
                         {
                             writer.Write(alreadyWrittenNodes[d]);
                             return null;
@@ -640,7 +603,7 @@ namespace Syroot.NintenTools.Byaml.Dynamic
             {
                 foreach (var d in alreadyWrittenNodes.Keys.Where(x => x is IEnumerable && x.Count == value.Count))
                 {
-                    if (IEnumerableIsEqual(d, value))
+                    if (IEnumerableCompare.IsEqual(d, value))
                     {
                         offset.Satisfy((int)alreadyWrittenNodes[d]);
                         return;

@@ -22,7 +22,6 @@ namespace OdysseyEditor.EditorFroms
 
         void UpdateTreeView()
         {
-            Level loadedLevel = ((Form1)Application.OpenForms[0]).LoadedLevel;
             treeView1.Nodes.Clear();
             treeView1.Nodes.Add("Links");
             foreach (string k in LinksNode.Keys)

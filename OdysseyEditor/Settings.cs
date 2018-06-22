@@ -23,6 +23,8 @@ namespace OdysseyEditor
 
         private void Settings_Load(object sender, EventArgs e)
         {
+			drawDistance.Maximum = decimal.MaxValue;
+			drawDistance.Value = double.IsInfinity(render.FarPlaneDistance) ? 0 : (decimal)render.FarPlaneDistance;
             SettingsPanel.Visible = true;
             CamInertiaUpDown.Value = (decimal)render.CameraInertiaFactor;
             ChbFps.Checked = render.ShowFps;
@@ -53,7 +55,9 @@ namespace OdysseyEditor
             render.ZoomSensitivity = (double)ZoomSenUpDown.Value;
             Properties.Settings.Default.RotSen = (double)RotSenUpDown.Value;
             render.RotationSensitivity = (double)RotSenUpDown.Value;
-            Properties.Settings.Default.CheckUpdates = ChbStartupUpdate.Checked;
+			render.FarPlaneDistance = drawDistance.Value == 0 ? double.PositiveInfinity : (double)drawDistance.Value;
+			Properties.Settings.Default.FarPlaneDistance = render.FarPlaneDistance;
+			Properties.Settings.Default.CheckUpdates = ChbStartupUpdate.Checked;
             Properties.Settings.Default.DownloadDb = ChbStartupDb.Checked;
             Properties.Settings.Default.DownloadDbLink = tbUrl.Text;
             Properties.Settings.Default.Save();
