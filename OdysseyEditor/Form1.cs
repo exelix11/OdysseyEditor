@@ -637,7 +637,7 @@ namespace OdysseyEditor
 		{
 			var SelectedPath = PropertyGridGetPath();
 			if (SelectedPath.Count == 0 ||
-				(SelectedPath.Count == 1 && LevelObj.ReservedNames.Contains(SelectedPath[0])))
+				(SelectedPath.Count == 1 && LevelObj.CantRemoveNames.Contains(SelectedPath[0])))
 			{
 				MessageBox.Show("Can't remove this property");
 				return;
@@ -660,9 +660,7 @@ namespace OdysseyEditor
 				}
 			}
 			propertyGrid1.Refresh();
-		}
-
-		
+		}		
 
 		private void button4_Click(object sender, EventArgs e)
 		{
@@ -689,6 +687,7 @@ namespace OdysseyEditor
 						((Dictionary<string, dynamic>)target).Add(newProp.Item1, toAdd);
 				}
 			}
+			propertyGrid1.Refresh();
 		}
 
 		private void lnk_hideSelectedObjs_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
