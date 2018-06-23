@@ -32,12 +32,13 @@
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.CopyNode = new System.Windows.Forms.ToolStripMenuItem();
+			this.addNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editValueNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportJsonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.addNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -60,44 +61,18 @@
             this.deleteNodeToolStripMenuItem,
             this.exportJsonToolStripMenuItem,
             this.toolStripSeparator1,
-            this.saveAsToolStripMenuItem});
+            this.saveAsToolStripMenuItem,
+            this.saveToolStripMenuItem});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 164);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(181, 186);
 			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuOpening);
 			// 
 			// CopyNode
 			// 
 			this.CopyNode.Name = "CopyNode";
-			this.CopyNode.Size = new System.Drawing.Size(168, 22);
+			this.CopyNode.Size = new System.Drawing.Size(180, 22);
 			this.CopyNode.Text = "Copy node as text";
 			this.CopyNode.Click += new System.EventHandler(this.CopyNode_Click);
-			// 
-			// editValueNodeMenuItem
-			// 
-			this.editValueNodeMenuItem.Name = "editValueNodeMenuItem";
-			this.editValueNodeMenuItem.Size = new System.Drawing.Size(168, 22);
-			this.editValueNodeMenuItem.Text = "Edit value";
-			this.editValueNodeMenuItem.Click += new System.EventHandler(this.editValueNodeMenuItem_Click);
-			// 
-			// exportJsonToolStripMenuItem
-			// 
-			this.exportJsonToolStripMenuItem.Name = "exportJsonToolStripMenuItem";
-			this.exportJsonToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-			this.exportJsonToolStripMenuItem.Text = "Export json";
-			this.exportJsonToolStripMenuItem.Visible = false;
-			this.exportJsonToolStripMenuItem.Click += new System.EventHandler(this.exportJsonToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(165, 6);
-			// 
-			// saveAsToolStripMenuItem
-			// 
-			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-			this.saveAsToolStripMenuItem.Text = "Save as..";
-			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// addNodeToolStripMenuItem
 			// 
@@ -106,12 +81,47 @@
 			this.addNodeToolStripMenuItem.Text = "Add Node";
 			this.addNodeToolStripMenuItem.Click += new System.EventHandler(this.addNodeToolStripMenuItem_Click);
 			// 
+			// editValueNodeMenuItem
+			// 
+			this.editValueNodeMenuItem.Name = "editValueNodeMenuItem";
+			this.editValueNodeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.editValueNodeMenuItem.Text = "Edit value";
+			this.editValueNodeMenuItem.Click += new System.EventHandler(this.editValueNodeMenuItem_Click);
+			// 
 			// deleteNodeToolStripMenuItem
 			// 
 			this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
 			this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.deleteNodeToolStripMenuItem.Text = "Delete node";
 			this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.deleteNodeToolStripMenuItem_Click);
+			// 
+			// exportJsonToolStripMenuItem
+			// 
+			this.exportJsonToolStripMenuItem.Name = "exportJsonToolStripMenuItem";
+			this.exportJsonToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exportJsonToolStripMenuItem.Text = "Export json";
+			this.exportJsonToolStripMenuItem.Visible = false;
+			this.exportJsonToolStripMenuItem.Click += new System.EventHandler(this.exportJsonToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+			// 
+			// saveAsToolStripMenuItem
+			// 
+			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.saveAsToolStripMenuItem.Text = "Save as..";
+			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+			// 
+			// saveToolStripMenuItem
+			// 
+			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.saveToolStripMenuItem.Text = "Save";
+			this.saveToolStripMenuItem.Visible = false;
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
 			// ByamlViewer
 			// 
@@ -138,5 +148,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem addNodeToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem deleteNodeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 	}
 }
