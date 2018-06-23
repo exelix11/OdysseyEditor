@@ -1,6 +1,6 @@
 ﻿//FASTLOAD: allow to reuse node references, loads faster and uses less ram but editing a single field might change other stuff
 #if DEBUG
-#define FASTLOAD
+//#define FASTLOAD
 #endif
 using System;
 using System.Collections;

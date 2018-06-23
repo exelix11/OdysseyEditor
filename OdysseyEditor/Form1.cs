@@ -151,8 +151,8 @@ namespace OdysseyEditor
 
             if (FileOpenArgs != null)
                 LoadLevel(FileOpenArgs);
-            //openToolStripMenuItem_Click(null, null);
-        }
+			//openToolStripMenuItem_Click(null, null);			
+		}
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -267,7 +267,7 @@ namespace OdysseyEditor
             findToolStripMenuItem.Visible = true;
         }
 
-        bool NoModels = false; //Debug only
+        bool NoModels = true; //Debug only
         List<string> SkipModels = null;
         string GetModelName(string ObjName) //convert bfres to obj and cache in models folder
         {
@@ -545,8 +545,9 @@ namespace OdysseyEditor
         private void OpenSzsFile_click(object sender, EventArgs e)
         {
             string name = ((ToolStripMenuItem)sender).Text;
-            var byml = ByamlFile.Load(new MemoryStream(LoadedLevel.SzsFiles[name]), false, Syroot.BinaryData.ByteOrder.LittleEndian);
-            new RedCarpet.ByamlViewer(byml).Show();
+			var stream = new MemoryStream(LoadedLevel.SzsFiles[name]);
+			var byml = ByamlFile.Load(stream, false, Syroot.BinaryData.ByteOrder.LittleEndian);
+            new RedCarpet.ByamlViewer(byml, stream).Show();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1064,7 +1065,6 @@ namespace OdysseyEditor
                 new Settings(render).ShowDialog();
                 this.Focus();
             }
-        }
-
+        }		
 	}
 }

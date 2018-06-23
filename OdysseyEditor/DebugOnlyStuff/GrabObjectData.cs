@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OdysseyEditor.Debug
+namespace OdysseyEditor.DebugStuff
 {
 	//USAGE: new Debug.GrabObjectData().run(Directory.GetFiles(GameFolder + "StageData","*Map.szs").ToList());
 	//To use this consider enabling FASTLOAD in ByamlFile.cs

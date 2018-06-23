@@ -13,27 +13,38 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
+using Syroot.BinaryData;
 
 namespace RedCarpet
 {
     public partial class ByamlViewer : Form
     {
-        public dynamic byml;
-        public ByamlViewer(dynamic by)
+		public ByteOrder byteOrder;
+		public dynamic byml;
+        public ByamlViewer(System.Collections.IEnumerable by, ByteOrder defaultOrder = ByteOrder.LittleEndian)
         {
             InitializeComponent();
-            byml = by;
+			byteOrder = defaultOrder;
+			byml = by;
             if (byml == null) return;
-            //the first node should always be a dictionary node
-            if (byml is Dictionary<string, dynamic>)
-            {
-                parseDictNode(byml, treeView1.Nodes);
-            }
-            else if (byml is List<dynamic>)
-            {
-                parseArrayNode(byml, treeView1.Nodes);
-            }
+			//the first node should always be a dictionary node
+			if (byml is Dictionary<string, dynamic>)
+			{
+				parseDictNode(byml, treeView1.Nodes);
+			}
+			else if (byml is List<dynamic>)
+			{
+				parseArrayNode(byml, treeView1.Nodes);
+			}
+			else throw new Exception($"Unsupported root node type {by.GetType()}");
         }
+
+		Stream saveStream = null;
+		public ByamlViewer(System.Collections.IEnumerable by,Stream saveTo, ByteOrder defaultOrder = ByteOrder.LittleEndian) : this(by, defaultOrder)
+		{
+			saveStream = saveTo;
+			saveToolStripMenuItem.Visible = true;
+		}
 
 		//get a reference to the value to change
 		class EditableNode
@@ -188,7 +199,7 @@ namespace RedCarpet
             sav.Filter = "byml file | *.byml";
             if (sav.ShowDialog() == DialogResult.OK)
             {
-                ByamlFile.Save(sav.FileName, byml);
+                ByamlFile.Save(sav.FileName, byml, false, byteOrder);
             }
         }
 
@@ -277,6 +288,13 @@ namespace RedCarpet
 			else
 				target.RemoveAt(targetNode.IndexOf(treeView1.SelectedNode));
 			targetNode.RemoveAt(index);
+		}
+
+		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			saveStream.Position = 0;
+			saveStream.SetLength(0);
+			ByamlFile.Save(saveStream, byml, false, byteOrder);
 		}
 	}
 }
