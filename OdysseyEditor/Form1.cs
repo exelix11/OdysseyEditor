@@ -271,10 +271,11 @@ namespace OdysseyEditor
         List<string> SkipModels = null;
         string GetModelName(string ObjName) //convert bfres to obj and cache in models folder
         {
-            if (NoModels && Debugger.IsAttached)
+#if DEBUG
+			if (NoModels && Debugger.IsAttached)
                 return null;
-
-            if (SkipModels?.Contains(ObjName) ?? false) return null;
+#endif
+			if (SkipModels?.Contains(ObjName) ?? false) return null;
 
             string CachedModelPath = $"{ModelsFolder}\\{ObjName}.obj";
             if (File.Exists(CachedModelPath))

@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
 			this.SettingsPanel = new System.Windows.Forms.Panel();
+			this.drawDistance = new System.Windows.Forms.NumericUpDown();
+			this.label1 = new System.Windows.Forms.Label();
 			this.btn_url_Default = new System.Windows.Forms.Button();
 			this.ChbStartupUpdate = new System.Windows.Forms.CheckBox();
 			this.label11 = new System.Windows.Forms.Label();
@@ -48,13 +50,11 @@
 			this.ChbFps = new System.Windows.Forms.CheckBox();
 			this.CamInertiaUpDown = new System.Windows.Forms.NumericUpDown();
 			this.label4 = new System.Windows.Forms.Label();
-			this.drawDistance = new System.Windows.Forms.NumericUpDown();
-			this.label1 = new System.Windows.Forms.Label();
 			this.SettingsPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.drawDistance)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.RotSenUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.ZoomSenUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CamInertiaUpDown)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.drawDistance)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// SettingsPanel
@@ -87,6 +87,32 @@
 			this.SettingsPanel.Size = new System.Drawing.Size(397, 420);
 			this.SettingsPanel.TabIndex = 18;
 			this.SettingsPanel.Visible = false;
+			// 
+			// drawDistance
+			// 
+			this.drawDistance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+			this.drawDistance.Location = new System.Drawing.Point(313, 141);
+			this.drawDistance.Maximum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+			this.drawDistance.Name = "drawDistance";
+			this.drawDistance.Size = new System.Drawing.Size(75, 20);
+			this.drawDistance.TabIndex = 22;
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(26, 135);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(89, 26);
+			this.label1.TabIndex = 21;
+			this.label1.Text = "Draw distance\r\nDefault 0 (Infinity)";
 			// 
 			// btn_url_Default
 			// 
@@ -179,7 +205,7 @@
             65536});
 			this.RotSenUpDown.Location = new System.Drawing.Point(313, 107);
 			this.RotSenUpDown.Maximum = new decimal(new int[] {
-            2,
+            50,
             0,
             0,
             0});
@@ -205,11 +231,6 @@
             0,
             131072});
 			this.ZoomSenUpDown.Location = new System.Drawing.Point(313, 70);
-			this.ZoomSenUpDown.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
 			this.ZoomSenUpDown.Name = "ZoomSenUpDown";
 			this.ZoomSenUpDown.Size = new System.Drawing.Size(75, 20);
 			this.ZoomSenUpDown.TabIndex = 9;
@@ -303,32 +324,6 @@
 			this.label4.TabIndex = 0;
 			this.label4.Text = "Camera inertia factor:\r\n (This controls how much the camera slips) Default: 0,92";
 			// 
-			// drawDistance
-			// 
-			this.drawDistance.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-			this.drawDistance.Location = new System.Drawing.Point(313, 141);
-			this.drawDistance.Maximum = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-			this.drawDistance.Name = "drawDistance";
-			this.drawDistance.Size = new System.Drawing.Size(75, 20);
-			this.drawDistance.TabIndex = 22;
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(26, 135);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(89, 26);
-			this.label1.TabIndex = 21;
-			this.label1.Text = "Draw distance\r\nDefault 0 (Infinity)";
-			// 
 			// Settings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -344,10 +339,10 @@
 			this.Load += new System.EventHandler(this.Settings_Load);
 			this.SettingsPanel.ResumeLayout(false);
 			this.SettingsPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.drawDistance)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.RotSenUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.ZoomSenUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.CamInertiaUpDown)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.drawDistance)).EndInit();
 			this.ResumeLayout(false);
 
         }

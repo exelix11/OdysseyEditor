@@ -9,7 +9,7 @@ namespace OdysseyEditor
 {
     class UpdateCheck
     {
-        public const int ReleaseID = 1;
+        public const int ReleaseID = 2;
 
         public static async Task CheckForUpdates()
         {
