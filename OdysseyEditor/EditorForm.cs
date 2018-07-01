@@ -21,7 +21,7 @@ using System.Diagnostics;
 
 namespace OdysseyEditor
 {
-    public partial class Form1 : Form
+    public partial class EditorForm : Form
     {
 #if RELEASE
         public static string GameFolder = "";
@@ -65,10 +65,25 @@ namespace OdysseyEditor
         }
 
         LevelObj SelectedObj
-        {
-            get {
-                return SelectionCount == 0 ? null : CurList[ObjectsListBox.SelectedIndex];
-            }
+		{
+			get {
+				return SelectionCount == 0 ? null : CurList[ObjectsListBox.SelectedIndex];
+			}
+			set
+			{
+				ObjectsListBox.ClearSelected();
+				render.ClearSelection();
+				if (value == null) 
+					return;
+				if (!CurList.Contains(value))
+				{
+					if (EditingList) return; //if edit links edit only current list
+					ObjList list = LoadedLevel.FindListByObj(value);
+					if (list != null)
+						CurListName = list.name;
+				}
+				ObjectsListBox.SelectedIndex = CurList.IndexOf(value);
+			}
         }
 
         LevelObj[] SelectedObjs
@@ -87,7 +102,7 @@ namespace OdysseyEditor
 
         bool EditingList { get { return ListEditingStack.Count != 0; } }
 
-        public Form1(string[] args)
+        public EditorForm(string[] args)
         {
             InitializeComponent();
             KeyPreview = true;
@@ -322,6 +337,7 @@ namespace OdysseyEditor
 
         public void EditList(IList<dynamic> objList)
         {
+			SelectedObj = null;
             ObjList list = new ObjList(RendererControl.C0ListName, objList);
             ListEditingStack.Push(list);
             foreach (var o in list) ObjectsListBox.Items.Add(o.ToString());
@@ -785,25 +801,8 @@ namespace OdysseyEditor
 
         private void render_LeftClick(object sender, MouseButtonEventArgs e)
         {
-            if (RenderIsDragging) return;
-            var result = render.GetOBJ(sender, e);
-            if (result == null) return;
-            if ((ModifierKeys & Keys.Shift) == Keys.Shift && CurList.Contains(result))
-            {
-                ObjectsListBox.SelectedIndices.Add(CurList.IndexOf(result));
-            }
-            else
-            {
-                ObjList list = null;
-                if (EditingList) list = CurList.Contains(result) ? CurList : null;
-                else list = LoadedLevel.FindListByObj(result);
-                if (list != null)
-                {
-                    CurListName = list.name;
-                    ObjectsListBox.ClearSelected();
-                    ObjectsListBox.SelectedIndex = list.IndexOf(result);
-                }
-            }
+
+            
         }
 
         private void render_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) //Render hotkeys
@@ -851,16 +850,28 @@ namespace OdysseyEditor
 
         private void render_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if ((ModifierKeys & Keys.Control) != Keys.Control || RenderIsDragging) return;
+            if (RenderIsDragging) return;
             var obj = render.GetOBJ(sender, e);
             if (obj == null)
             {
                 return;
             }
-            DraggingArgs = new DragArgs();
-            DraggingArgs.obj = obj;
-            DraggingArgs.StartPos = ((LevelObj)DraggingArgs.obj).ModelView_Pos;
-            DraggingArgs.position = DraggingArgs.StartPos;
+
+			if ((ModifierKeys & Keys.Shift) == Keys.Shift && CurList.Contains(obj))
+			{
+				ObjectsListBox.SelectedIndices.Add(CurList.IndexOf(obj));
+				return; // drag only a single object
+			}
+			else
+				SelectedObj = obj;
+
+			if (SelectedObj == obj && (ModifierKeys & Keys.Control) == Keys.Control) //User wants to drag
+			{
+				DraggingArgs = new DragArgs();
+				DraggingArgs.obj = obj;
+				DraggingArgs.StartPos = ((LevelObj)DraggingArgs.obj).ModelView_Pos;
+				DraggingArgs.position = DraggingArgs.StartPos;
+			}
         }
 
 #endregion
@@ -891,7 +902,7 @@ namespace OdysseyEditor
 						$"Edited links of {SelectedObj.ToString()}",
 						new dynamic[] { SelectedObj, BakLinks });
 
-					new EditorFroms.LinksEditor(SelectedObj[LevelObj.N_Links]).ShowDialog();
+					new EditorFroms.LinksEditor(SelectedObj[LevelObj.N_Links],this).ShowDialog();
 				}
 			}
 #if DEBUG

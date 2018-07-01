@@ -31,10 +31,16 @@ namespace OdysseyEditor
         public const string N_Links = "Links"; 
 		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links };
 
+		public const string N_LayerConfigName = "LayerConfigName";
+		public const string N_PlacementFileName = "PlacementFileName";
+
 		public const string N_UnitConfig = "UnitConfig";
-		public const string N_UnitConfigPos = "DisplayTranslate";
-		public const string N_UnitConfigRot = "DisplayRotate";
-		public const string N_UnitConfigScale = "DisplayScale";
+		public const string N_UC_Pos = "DisplayTranslate";
+		public const string N_UC_Rot = "DisplayRotate";
+		public const string N_UC_Scale = "DisplayScale";
+		public const string N_UC_DispName = "DisplayName";
+		public const string N_UC_PlacementTarget = "PlacementTargetFile";
+		public const string N_UC_Category = "GenerateCategory";
 
 		public Dictionary<string, dynamic> Prop = new Dictionary<string, dynamic>();
 
@@ -63,19 +69,24 @@ namespace OdysseyEditor
             Prop.Add(N_Links, new LinksNode());
             this[N_Name] = "newObj";
             this[N_Id] = "obj0";
+			this[N_ModelName] = null;
+			this[N_LayerConfigName] = "Common";
 			Prop.Add(N_UnitConfig, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig].Add(N_UnitConfigPos, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("X", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("Y", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("Z", (Single)0);
-			Prop[N_UnitConfig].Add(N_UnitConfigRot, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("X", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("Y", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("Z", (Single)0);
-			Prop[N_UnitConfig].Add(N_UnitConfigScale, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("X", (Single)1);
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("Y", (Single)1);
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("Z", (Single)1);
+			Prop[N_UnitConfig].Add(N_UC_Pos, new Dictionary<string, dynamic>());
+			Prop[N_UnitConfig][N_UC_Pos].Add("X", (Single)0);
+			Prop[N_UnitConfig][N_UC_Pos].Add("Y", (Single)0);
+			Prop[N_UnitConfig][N_UC_Pos].Add("Z", (Single)0);
+			Prop[N_UnitConfig].Add(N_UC_Rot, new Dictionary<string, dynamic>());
+			Prop[N_UnitConfig][N_UC_Rot].Add("X", (Single)0);
+			Prop[N_UnitConfig][N_UC_Rot].Add("Y", (Single)0);
+			Prop[N_UnitConfig][N_UC_Rot].Add("Z", (Single)0);
+			Prop[N_UnitConfig].Add(N_UC_Scale, new Dictionary<string, dynamic>());
+			Prop[N_UnitConfig][N_UC_Scale].Add("X", (Single)1);
+			Prop[N_UnitConfig][N_UC_Scale].Add("Y", (Single)1);
+			Prop[N_UnitConfig][N_UC_Scale].Add("Z", (Single)1);
+			Prop[N_UnitConfig].Add(N_UC_DispName, "GameObject");
+			Prop[N_UnitConfig].Add(N_UC_PlacementTarget, "Map");
+			Prop[N_UnitConfig].Add(N_UC_Category, "ObjectList");
 		}
 
         public dynamic this [string name]
@@ -252,9 +263,17 @@ namespace OdysseyEditor
         public override object EditValue(ITypeDescriptorContext context, System.IServiceProvider provider, object value)
         {
             LinksNode node = value as LinksNode;
-            if (node != null)
+			/*context should be of type System.Windows.Forms.PropertyGridInternal.PropertyDescriptorGridEntry
+			OwnerGrid is not a public property, we get it through reflection
+			A reference to the parent form is needed to add the ObjList to the ListEditingStack*/
+			Type t = context.GetType();
+			if (!(t.GetProperty("OwnerGrid").GetValue(context, null) is PropertyGrid targetGrid))
+				throw new Exception("context is not of the expected type");
+			if (!(targetGrid.ParentForm is EditorForm TargetForm))
+				throw new Exception("context is not of the expected type");
+			if (node != null)
             {
-                using (var form = new OdysseyEditor.EditorFroms.LinksEditor(node))
+                using (var form = new OdysseyEditor.EditorFroms.LinksEditor(node, TargetForm))
                 {
                     form.ShowDialog();
                 }

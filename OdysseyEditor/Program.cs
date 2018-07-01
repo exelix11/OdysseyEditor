@@ -28,7 +28,7 @@ namespace OdysseyEditor
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(args));
+            Application.Run(new EditorForm(args));
         }
     }
 }
