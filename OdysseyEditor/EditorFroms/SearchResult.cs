@@ -10,16 +10,16 @@ using System.Windows.Forms;
 
 namespace OdysseyEditor.EditorFroms
 {
-    public partial class SearchResult : Form
+    public partial class SearchResult : Form, EditorChild
     {
         public Tuple<ObjList, LevelObj>[] SearchResultArr;
-        EditorForm owner;
-        public SearchResult(Tuple<ObjList,LevelObj>[] _sr, string title, EditorForm _owner)
+		public EditorForm ParentEditor { get; set; }
+		public SearchResult(Tuple<ObjList,LevelObj>[] _sr, string title, EditorForm _owner)
         {
             InitializeComponent();
             title = "Search result: " + title;
             SearchResultArr = _sr;
-            owner = _owner;
+            ParentEditor = _owner;
         }
 
         private void SearchResult_Load(object sender, EventArgs e)
@@ -34,7 +34,7 @@ namespace OdysseyEditor.EditorFroms
         {
             if (listBox1.SelectedIndex >= 0)
             {
-                owner.SelectObject(SearchResultArr[listBox1.SelectedIndex].Item1, SearchResultArr[listBox1.SelectedIndex].Item2);
+                ParentEditor.SelectObject(SearchResultArr[listBox1.SelectedIndex].Item1, SearchResultArr[listBox1.SelectedIndex].Item2);
             } 
         }
     }
