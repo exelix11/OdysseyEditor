@@ -1,6 +1,5 @@
 # OdysseyEditor
 This is an experimental level editor for super mario odyssey.
-At the time of writing there is no public way to load patched files, thus it's unknown if the levels made with this editor actually work in-game.
 
 ## What's done
   - Load levels, converting models to obj
@@ -11,7 +10,6 @@ At the time of writing there is no public way to load patched files, thus it's u
   - A native/GPU-accelerated 3D renderer, the current one uses WPF and is kinda laggy
   - Area models are not in the game data, most of them are just replaced by a box *that doesn't reflect the actual area volume*, with some guess work they could be drawn manually to make areas correctly show
   - Undo is not fully implemented
-  - Editing multiple objects at the same time
   - Probably other stuff
 
 ## Controls
@@ -29,6 +27,7 @@ Del | Delete selection
 H | Hide selection from view
 C | Edit the links of the selected object
 B (while editing a links list) | Go back to the previous list
+Q | Switch camera mode
 
 ## Credits
 This editor contains code or libraries from:
