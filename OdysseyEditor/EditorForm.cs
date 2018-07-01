@@ -107,7 +107,6 @@ namespace OdysseyEditor
             InitializeComponent();
             KeyPreview = true;
             RenderingCanvas.Child = render;
-            render.MouseLeftButtonDown += render_LeftClick;
             render.MouseMove += render_MouseMove;
             render.MouseLeftButtonDown += render_MouseLeftButtonDown;
             render.MouseLeftButtonUp += render_MouseLeftButtonUp;
@@ -798,13 +797,7 @@ namespace OdysseyEditor
             
         DragArgs DraggingArgs = null;
         bool RenderIsDragging { get { return DraggingArgs != null && Mouse.LeftButton == MouseButtonState.Pressed && (ModifierKeys & Keys.Control) == Keys.Control; } }        
-
-        private void render_LeftClick(object sender, MouseButtonEventArgs e)
-        {
-
-            
-        }
-
+		
         private void render_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) //Render hotkeys
         {
             if (RenderIsDragging) return;
