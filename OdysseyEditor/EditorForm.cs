@@ -745,7 +745,6 @@ namespace OdysseyEditor
             HideGroup_CB.Checked = CurList.IsHidden;
             HideGroup_CB.CheckedChanged += HideGroup_CB_CheckedChanged;
             foreach (var o in CurList) ObjectsListBox.Items.Add(o.ToString());
-            ObjectsListBox.SelectedIndex = 0;
         }
 
         private void SelectedObjectChanged(object sender, EventArgs e) //ObjectsListBox
