@@ -10,15 +10,15 @@ using System.Windows.Forms;
 
 namespace OdysseyEditor.EditorFroms
 {
-    public partial class LinksEditor : Form
-    {
+    public partial class LinksEditor : Form, EditorChild
+	{
         IDictionary<string, dynamic> LinksNode;
-		EditorForm ParentForm;
+		public EditorForm ParentEditor { get; set; }
 
 		public LinksEditor(dynamic node, EditorForm _parentForm)
         {
             InitializeComponent();
-			ParentForm = _parentForm;
+			ParentEditor = _parentForm;
 			LinksNode = node;
             UpdateTreeView();
 		}
@@ -50,7 +50,7 @@ namespace OdysseyEditor.EditorFroms
             if (treeView1.SelectedNode == null) return;
             if (treeView1.SelectedNode.Tag is string)
             {
-				ParentForm.EditList(LinksNode[(string)treeView1.SelectedNode.Tag]);
+				ParentEditor.EditList(LinksNode[(string)treeView1.SelectedNode.Tag]);
                 this.Close();
             }
         }

@@ -98,6 +98,7 @@
     <Compile Include="EditorFroms\AddPropertyDialog.Designer.cs">
       <DependentUpon>AddPropertyDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorFroms\EditorChild.cs" />
     <Compile Include="EditorFroms\LinksEditor.cs">
       <SubType>Form</SubType>
     </Compile>
