@@ -13,8 +13,8 @@ namespace OdysseyEditor.EditorFroms
     public partial class SearchResult : Form
     {
         public Tuple<ObjList, LevelObj>[] SearchResultArr;
-        Form1 owner;
-        public SearchResult(Tuple<ObjList,LevelObj>[] _sr, string title, Form1 _owner)
+        EditorForm owner;
+        public SearchResult(Tuple<ObjList,LevelObj>[] _sr, string title, EditorForm _owner)
         {
             InitializeComponent();
             title = "Search result: " + title;

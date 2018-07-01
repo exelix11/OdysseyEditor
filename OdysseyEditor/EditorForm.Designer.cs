@@ -1,6 +1,6 @@
 ﻿namespace OdysseyEditor
 {
-    partial class Form1
+    partial class EditorForm
     {
         /// <summary>
         /// Variabile di progettazione necessaria.

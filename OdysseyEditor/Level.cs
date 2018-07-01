@@ -168,28 +168,28 @@ namespace OdysseyEditor
             public string ListName;
         }
 
-        public SearchResult FindObjById(string ID)
-        {
-            foreach (string k in objs.Keys)
-            {
-                for (int i = 0; i < objs[k].Count; i++)
-                {
-                    if (objs[k][i].ID == ID)
-                        return new SearchResult
-                        {
-                            obj = objs[k][i],
-                            Index = i,
-                            ListName = k
-                        };
-                }
-            }
-            return new SearchResult
-            {
-                obj = null,
-                Index = -1,
-                ListName = ""
-            };
-        }
+        //public SearchResult FindObjById(string ID)
+        //{
+        //    foreach (string k in objs.Keys)
+        //    {
+        //        for (int i = 0; i < objs[k].Count; i++)
+        //        {
+        //            if (objs[k][i].ID == ID)
+        //                return new SearchResult
+        //                {
+        //                    obj = objs[k][i],
+        //                    Index = i,
+        //                    ListName = k
+        //                };
+        //        }
+        //    }
+        //    return new SearchResult
+        //    {
+        //        obj = null,
+        //        Index = -1,
+        //        ListName = ""
+        //    };
+        //}
 
         public ObjList FindListByObj(LevelObj o)
         {
