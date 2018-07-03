@@ -34,8 +34,7 @@ namespace OdysseyEditor
 
         public Level LoadedLevel;
         public CustomStack<ObjList> ListEditingStack = new CustomStack<ObjList>();
-
-        public ClipBoardItem StoredValue = null;
+        
         public CustomStack<UndoAction> UndoList = new CustomStack<UndoAction>();
 
         string CurListName
@@ -65,25 +64,26 @@ namespace OdysseyEditor
         }
 
         LevelObj SelectedObj
-		{
-			get {
-				return SelectionCount == 0 ? null : CurList[ObjectsListBox.SelectedIndex];
-			}
-			set
-			{
-				ObjectsListBox.ClearSelected();
-				render.ClearSelection();
-				if (value == null) 
-					return;
-				if (!CurList.Contains(value))
-				{
-					if (EditingList) return; //if edit links edit only current list
-					ObjList list = LoadedLevel.FindListByObj(value);
-					if (list != null)
-						CurListName = list.name;
-				}
-				ObjectsListBox.SelectedIndex = CurList.IndexOf(value);
-			}
+        {
+            get
+            {
+                return SelectionCount == 0 ? null : CurList[ObjectsListBox.SelectedIndex];
+            }
+            set
+            {
+                ObjectsListBox.ClearSelected();
+                render.ClearSelection();
+                if (value == null)
+                    return;
+                if (!CurList.Contains(value))
+                {
+                    if (EditingList) return; //if edit links edit only current list
+                    ObjList list = LoadedLevel.FindListByObj(value);
+                    if (list != null)
+                        CurListName = list.name;
+                }
+                ObjectsListBox.SelectedIndex = CurList.IndexOf(value);
+            }
         }
 
         LevelObj[] SelectedObjs
@@ -102,7 +102,7 @@ namespace OdysseyEditor
 
         bool EditingList { get { return ListEditingStack.Count != 0; } }
 
-        public EditorForm(string[] args)
+        public EditorForm(String fileName)
         {
             InitializeComponent();
             KeyPreview = true;
@@ -123,25 +123,10 @@ namespace OdysseyEditor
 
 #if DEBUG
             if (Debugger.IsAttached) this.Text += " - Debugger.IsAttached";
-            else this.Text += " - DEBUG BUILD";            
+            else this.Text += " - DEBUG BUILD";
 #endif
 
-            foreach (string file in args)
-            {
-                if (File.Exists(file))
-                {
-                    if (file.EndsWith("byml") || file.EndsWith("byaml"))
-                    {
-                        ByamlViewer.OpenByml(file);
-                    }
-                    else if (file.EndsWith(".szs"))
-                    {
-                        FileOpenArgs = file;
-                        break;
-                    }
-                }
-            }
-
+            FileOpenArgs = fileName;
         }
 
 #if DEBUG
@@ -336,7 +321,7 @@ namespace OdysseyEditor
 
         public void EditList(IList<dynamic> objList)
         {
-			SelectedObj = null;
+            SelectedObj = null;
             ObjList list = new ObjList(RendererControl.C0ListName, objList);
             ListEditingStack.Push(list);
             foreach (var o in list) ObjectsListBox.Items.Add(o.ToString());
@@ -440,7 +425,7 @@ namespace OdysseyEditor
         #region ClipBoard
         private void ClipBoardMenu_Opening(object sender, CancelEventArgs e)
         {
-            ClipBoardMenu_Paste.Enabled = StoredValue != null;
+            ClipBoardMenu_Paste.Enabled = Program.StoredValue != null;
             {
                 bool SingleObjectSelected = SelectionCount == 1;
                 ClipBoardMenu_CopyPos.Visible = SingleObjectSelected;
@@ -454,30 +439,30 @@ namespace OdysseyEditor
         }
 
         private void ClipBoardMenu_CopyTransform_Click(object sender, EventArgs e) =>
-            StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Transform, transform = SelectedObj.transform };
+            Program.StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Transform, transform = SelectedObj.transform };
 
         private void ClipBoardMenu_CopyPos_Click(object sender, EventArgs e) =>
-            StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Position, transform = SelectedObj.transform };
+            Program.StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Position, transform = SelectedObj.transform };
 
         private void ClipBoardMenu_CopyRot_Click(object sender, EventArgs e) =>
-            StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Rotation, transform = SelectedObj.transform };
+            Program.StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Rotation, transform = SelectedObj.transform };
 
         private void ClipBoardMenu_CopyScale_Click(object sender, EventArgs e) =>
-            StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Scale, transform = SelectedObj.transform };
+            Program.StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Scale, transform = SelectedObj.transform };
 
         private void Btn_CopyObjs_Click(object sender, EventArgs e) => ClipBoardMenu_CopyFull_Click(null, null);
         private void ClipBoardMenu_CopyFull_Click(object sender, EventArgs e)
         {
             LevelObj[] objs = new LevelObj[SelectionCount];
             for (int i = 0; i < objs.Length; i++) objs[i] = SelectedObjs[i].Clone();
-            StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Objects, Objs = objs };
+            Program.StoredValue = new ClipBoardItem() { Type = ClipBoardItem.ClipboardType.Objects, Objs = objs };
         }
 
         private void ClipBoardMenu_Paste_Click(object sender, EventArgs e)
         {
-            if (StoredValue.Type == ClipBoardItem.ClipboardType.Objects)
+            if (Program.StoredValue.Type == ClipBoardItem.ClipboardType.Objects)
             {
-                foreach (var o in StoredValue.Objs)
+                foreach (var o in Program.StoredValue.Objs)
                     AddObj(o.Clone(), CurList);
             }
             else if (SelectionCount != 0)
@@ -497,19 +482,19 @@ namespace OdysseyEditor
 
                 foreach (var o in SelectedObjs)
                 {
-                    switch (StoredValue.Type)
+                    switch (Program.StoredValue.Type)
                     {
                         case ClipBoardItem.ClipboardType.Position:
-                            o.Pos = StoredValue.transform.Pos;
+                            o.Pos = Program.StoredValue.transform.Pos;
                             break;
                         case ClipBoardItem.ClipboardType.Rotation:
-                            o.Rot = StoredValue.transform.Rot;
+                            o.Rot = Program.StoredValue.transform.Rot;
                             break;
                         case ClipBoardItem.ClipboardType.Scale:
-                            o.Scale = StoredValue.transform.Scale;
+                            o.Scale = Program.StoredValue.transform.Scale;
                             break;
                         case ClipBoardItem.ClipboardType.Transform:
-                            o.transform = StoredValue.transform;
+                            o.transform = Program.StoredValue.transform;
                             break;
                     }
                     UpdateModelPosition(o);
@@ -650,7 +635,7 @@ namespace OdysseyEditor
 			return SelectedPath;
 		}
 
-		private void button5_Click(object sender, EventArgs e)
+		private void btnRemoveProperty_Click(object sender, EventArgs e)
 		{
 			var SelectedPath = PropertyGridGetPath();
 			if (SelectedPath.Count == 0 ||
@@ -679,7 +664,7 @@ namespace OdysseyEditor
 			propertyGrid1.Refresh();
 		}		
 
-		private void button4_Click(object sender, EventArgs e)
+		private void btnAddProperty_Click(object sender, EventArgs e)
 		{
 			var newProp = AddPropertyDialog.newProperty(!(propertyGrid1.SelectedGridItem.Value is List<dynamic>));
 			if (newProp == null) return;
@@ -796,7 +781,7 @@ namespace OdysseyEditor
             
         DragArgs DraggingArgs = null;
         bool RenderIsDragging { get { return DraggingArgs != null && Mouse.LeftButton == MouseButtonState.Pressed && (ModifierKeys & Keys.Control) == Keys.Control; } }        
-		
+        
         private void render_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) //Render hotkeys
         {
             if (RenderIsDragging) return;
@@ -848,22 +833,21 @@ namespace OdysseyEditor
             {
                 return;
             }
-
-			if ((ModifierKeys & Keys.Shift) == Keys.Shift && CurList.Contains(obj))
-			{
-				ObjectsListBox.SelectedIndices.Add(CurList.IndexOf(obj));
-				return; // drag only a single object
-			}
-			else
-				SelectedObj = obj;
-
-			if (SelectedObj == obj && (ModifierKeys & Keys.Control) == Keys.Control) //User wants to drag
-			{
-				DraggingArgs = new DragArgs();
-				DraggingArgs.obj = obj;
-				DraggingArgs.StartPos = ((LevelObj)DraggingArgs.obj).ModelView_Pos;
-				DraggingArgs.position = DraggingArgs.StartPos;
-			}
+            if ((ModifierKeys & Keys.Shift) == Keys.Shift && CurList.Contains(obj))
+            {
+                ObjectsListBox.SelectedIndices.Add(CurList.IndexOf(obj));
+                return; // drag only a single object
+            }
+            else
+                SelectedObj = obj;
+            
+            if (SelectedObj == obj && (ModifierKeys & Keys.Control) == Keys.Control) //User wants to drag
+            {
+                DraggingArgs = new DragArgs();
+                DraggingArgs.obj = obj;
+                DraggingArgs.StartPos = ((LevelObj)DraggingArgs.obj).ModelView_Pos;
+                DraggingArgs.position = DraggingArgs.StartPos;
+            }
         }
 
 #endregion
@@ -1030,14 +1014,6 @@ namespace OdysseyEditor
 
         void GamePathAndModelCheck()
         {
-            gamePathToolStripItem.Text = "Game path: " + GameFolder;
-            if (GameFolder == "" || !Directory.Exists(GameFolder))
-            {
-                MessageBox.Show("Select the path of the game, it will be used to display the models from the game");
-                changeToolStripMenuItem_Click(null, null);
-                MessageBox.Show("You can change it from the tools menu later");
-                this.Focus();
-            }
             if (!Directory.Exists(ModelsFolder))
             {
                 Directory.CreateDirectory(ModelsFolder);
@@ -1069,6 +1045,6 @@ namespace OdysseyEditor
                 new Settings(render).ShowDialog();
                 this.Focus();
             }
-        }		
-	}
+        }
+    }
 }
