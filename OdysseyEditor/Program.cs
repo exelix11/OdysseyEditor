@@ -28,7 +28,9 @@ namespace OdysseyEditor
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new EditorForm(args));
+            Application.Run(new MainForm(args));
         }
+
+        public static ClipBoardItem StoredValue = null;
     }
 }
