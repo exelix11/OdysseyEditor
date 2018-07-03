@@ -181,7 +181,7 @@ namespace OdysseyEditor
             List<Form> ToClose = new List<Form>();
             foreach (Form frm in Application.OpenForms)
             {
-                if (frm is EditorChild && ((EditorChild)frm).ParentEditor == this)
+                if (frm is IEditorChild && ((IEditorChild)frm).ParentEditor == this)
                     ToClose.Add(frm);
             }
             for (int i = 0; i < ToClose.Count; i++)

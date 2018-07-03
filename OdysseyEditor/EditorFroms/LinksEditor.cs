@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace OdysseyEditor.EditorFroms
 {
-    public partial class LinksEditor : Form, EditorChild
+    public partial class LinksEditor : Form, IEditorChild
 	{
         IDictionary<string, dynamic> LinksNode;
 		public EditorForm ParentEditor { get; set; }

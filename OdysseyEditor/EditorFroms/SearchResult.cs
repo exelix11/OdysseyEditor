@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace OdysseyEditor.EditorFroms
 {
-    public partial class SearchResult : Form, EditorChild
+    public partial class SearchResult : Form, IEditorChild
     {
         public Tuple<ObjList, LevelObj>[] SearchResultArr;
 		public EditorForm ParentEditor { get; set; }
