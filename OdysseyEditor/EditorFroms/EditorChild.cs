@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OdysseyEditor.EditorFroms
 {
-	interface EditorChild
+	interface IEditorChild
 	{
 		EditorForm ParentEditor { get; set; }
 	}
