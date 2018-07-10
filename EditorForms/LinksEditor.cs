@@ -35,7 +35,7 @@ namespace OdysseyExt.EditorFroms
                 node.Tag = k;
                 for (int i = 0; i < LinksNode[k].Count; i++)
                 {
-                    LevelObj obj = new LevelObj(LinksNode[k][i]);
+                    ILevelObj obj = LevelObj.FromNode(LinksNode[k][i]);
                     node.Nodes.Add(obj.ToString()).Tag = obj;
                 }
             }

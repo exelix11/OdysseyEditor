@@ -28,7 +28,7 @@ namespace OdysseyExt
             bymlNode = _bymlNode;
             foreach (var o in bymlNode)
             {
-                var obj = new LevelObj(o);
+                var obj = LevelObj.FromNode(o);
                 int objID = obj.ID_int;
                 if (Level._HighestID < objID) Level._HighestID = objID;
                 this.Add(obj);

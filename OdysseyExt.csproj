@@ -78,6 +78,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rails.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EditorForms\AddObjList.resx">
