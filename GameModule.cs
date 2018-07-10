@@ -8,6 +8,8 @@ using SARCExt;
 using Syroot.NintenTools.Byaml.Dynamic;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Design;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -21,7 +23,8 @@ namespace OdysseyExt
 	{
 		public string ModuleName => "Odyssey level";
 
-		public Tuple<Type, Type>[] GetClassConverters => new Tuple<Type, Type>[] {
+		public Tuple<Type, Type>[] GetClassConverters { get; } = 
+		new Tuple<Type, Type>[] {
 			new Tuple<Type, Type>(typeof(LinksNode), typeof(LinksConveter))
 		};
 
@@ -45,6 +48,9 @@ namespace OdysseyExt
 			if (listName == "AreaList") PlaceholderModel = "UnkYellow.obj";
 			else if (listName == "DebugList") PlaceholderModel = "UnkRed.obj";
 			else if (listName == "CameraAreaInfo") PlaceholderModel = "UnkGreen.obj";
+
+			if (name == "PointRailCollision")
+				PlaceholderModel = "UnkRed.obj";
 			return PlaceholderModel;
 		}
 
@@ -58,6 +64,7 @@ namespace OdysseyExt
 			KCLModelItem = MenuExtension.DropDownItems.Add("");
 			ToggleKclCollisions(false);
 			KCLModelItem.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
+
 		}
 
 		void ToggleKclCollisions(bool? val = null)
@@ -93,7 +100,8 @@ namespace OdysseyExt
 				var opn = new OpenFileDialog()
 				{
 					Filter = LevelFormatFilter,
-					Title = "Select a level"
+					Title = "Select a level",
+					//FileName = "RailCollisionExStageMap.szs"
 				};
 				if (opn.ShowDialog() != DialogResult.OK)
 					return null;
@@ -148,7 +156,9 @@ namespace OdysseyExt
 
 		public void EditChildrenNode(ILevelObj obj)
 		{
-			if (obj[LevelObj.N_Links] != null)
+			if (obj is Rail)
+				ViewForm.EditPath((IPathObj)obj);
+			else if (obj[LevelObj.N_Links] != null)
 			{
 				var BakLinks = ((LinksNode)obj[LevelObj.N_Links]).Clone();
 
@@ -159,7 +169,7 @@ namespace OdysseyExt
 					$"Edited links of {obj.ToString()}",
 					new dynamic[] { obj, BakLinks });
 
-				new EditorFroms.LinksEditor(obj[LevelObj.N_Links],ViewForm).ShowDialog();
+				new EditorFroms.LinksEditor(obj[LevelObj.N_Links], ViewForm).ShowDialog();
 			}
 		}
 

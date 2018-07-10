@@ -18,7 +18,17 @@ using static EditorCore.PropertyGridTypes;
 namespace OdysseyExt
 {
     public class LevelObj : ILevelObj
-    {
+	{
+		public static ILevelObj FromNode(dynamic bymlNode)
+		{
+			if (!(bymlNode is Dictionary<string, dynamic>)) throw new Exception("Not a dictionary");
+			var node = (Dictionary<string, dynamic>)bymlNode;
+			if (node.ContainsKey(N_Id) && ((string)node[N_Id]).StartsWith("rail"))
+				return new Rail(node);
+			else
+				return new LevelObj(node);
+		}
+
 		[Browsable(false)]
 		public bool CanDrag { get; set; } = true; //if the model is static and doesn't appear in the list (mk8 courses)
 		
@@ -37,16 +47,16 @@ namespace OdysseyExt
 		public const string N_UnitConfigRot = "DisplayRotate";
 		public const string N_UnitConfigScale = "DisplayScale";
 
+		[Browsable(false)]
 		public Dictionary<string, dynamic> Prop { get; set; } = new Dictionary<string, dynamic>();
 
-        public LevelObj(dynamic bymlNode)
+		public LevelObj(Dictionary<string, dynamic> bymlNode)
         {
-            if (bymlNode is Dictionary<string, dynamic>) Prop = (Dictionary<string, dynamic>)bymlNode;
-            else throw new Exception("Not a dictionary");
-            if (Prop.ContainsKey(N_Links) && !(Prop[N_Links] is LinksNode)) Prop[N_Links] = new LinksNode(Prop[N_Links]);
+			Prop = bymlNode;
+			if (Prop.ContainsKey(N_Links) && !(Prop[N_Links] is LinksNode)) Prop[N_Links] = new LinksNode(Prop[N_Links]);
         }
 
-        public LevelObj(bool empty = false)
+		public LevelObj(bool empty = false)
         {
             if (empty) return;
             Prop.Add(N_Translate, new Dictionary<string, dynamic>());
@@ -224,8 +234,8 @@ namespace OdysseyExt
         }
     }
 
-    [Editor(typeof(LinksEditorDef), typeof(UITypeEditor))]
-    class LinksNode : Dictionary<string, dynamic>, ICloneable //wrapper so we can use the custom editor
+    [Editor("OdysseyExt.LinksEditor", typeof(UITypeEditor))] //needs to be string to work (?)
+    public class LinksNode : Dictionary<string, dynamic>, ICloneable //wrapper so we can use the custom editor
     {
         public LinksNode(Dictionary<string, dynamic> dict) : base(dict)
         {
@@ -248,7 +258,7 @@ namespace OdysseyExt
         }
     }
 
-    public class LinksEditorDef : UITypeEditor
+    public class LinksEditor : UITypeEditor
     {
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
