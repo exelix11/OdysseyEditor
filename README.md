@@ -1,37 +1,10 @@
 # OdysseyEditor
-This is an experimental level editor for super mario odyssey.
+This is an experimental mario odyssey plugin for [EditorCore](https://github.com/exelix11/EditorCore).
+Refer to [EditorCore's readme](https://github.com/exelix11/EditorCore/blob/master/README.md) for the controls and other informations.
+The releases include the full editor.
 
-## What's done
-  - Load levels, converting models to obj
-  - Main editor features already implemented (Link nodes, Clipboard, undo, find)
-  - Byml viewing and converting to and from Json (beta)
+## Building
+This is just the odyssey plugin, to build you need to download an EditorCore commit that matches the version you want to build (aka if you want to build latest odyssey editor, latest EditorCore should work).
 
-## What's still missing
-  - A native/GPU-accelerated 3D renderer, the current one uses WPF and is kinda laggy
-  - Area models are not in the game data, most of them are just replaced by a box *that doesn't reflect the actual area volume*, with some guess work they could be drawn manually to make areas correctly show
-  - Undo is not fully implemented
-  - Probably other stuff
+Download this repo, and symlink it (or just copy it) to the GamePlugins folder of EditorCore, add it to the solution and build.
 
-## Controls
-There are two camera modes, choose the one you like from the settings.
-
-Hotkey | action
-|---|---|
-Space | Move camera to selected object
-Ctrl + drag object | Drag an object in the 3d view
-Alt while dragging | Snap the object every 100 units
-Shift while dragging | Snap the object every 50 units
-\+ | Add a new object (untested in-game)
-D | Duplicate selection
-Del | Delete selection
-H | Hide selection from view
-C | Edit the links of the selected object
-B (while editing a links list) | Go back to the previous list
-Q | Switch camera mode
-
-## Credits
-This editor contains code or libraries from:
-- [KillzXGaming's BFRES C# code ](https://github.com/KillzXGaming/Smash-Forge)
-- [gdkchan's BnTxx ](https://github.com/gdkchan/BnTxx)
-- [Gericom's EveryFileExplorer](https://github.com/Gericom/EveryFileExplorer)
-- [masterf0x's RedCarpet](https://github.com/masterf0x/RedCarpet)
