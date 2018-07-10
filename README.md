@@ -1,5 +1,6 @@
 # OdysseyEditor
 This is an experimental level editor for super mario odyssey.
+This is the legacy editor branch, you should be able to build just by restoring nuget packages
 
 ## What's done
   - Load levels, converting models to obj
