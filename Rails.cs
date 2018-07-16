@@ -47,20 +47,19 @@ namespace OdysseyExt
                 {
                     //move all path points along so no object movement gets messed up when moved
 
-                    float deltaX = this[N_Translate]["X"] - (Single)value.X;
-                    float deltaY = this[N_Translate]["Y"] - (Single)value.Y;
-                    float deltaZ = this[N_Translate]["Z"] + (Single)value.Z;
+                    float deltaX = (Single)value.X - this[N_Translate]["X"];
+                    float deltaY = (Single)value.Y - this[N_Translate]["Y"];
+                    float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
 
                     foreach (ILevelObj obj in ChildrenObjects)
                     {
-                        Vector3D pos = obj.ModelView_Pos;
+                        Vector3D pos = obj.Pos;
                         pos.X += deltaX;
-                        pos.Y += deltaZ;
-                        pos.Z += deltaY;
-                        obj.ModelView_Pos = pos;
+                        pos.Y += deltaY;
+                        pos.Z += deltaZ;
+                        obj.Pos = pos;
                     }
                 }
-
                 this[N_Translate]["X"] = (Single)value.X;
                 this[N_Translate]["Y"] = (Single)value.Y;
                 this[N_Translate]["Z"] = (Single)value.Z;
