@@ -37,8 +37,39 @@ namespace OdysseyExt
 			}
 		}
 
-//		[Browsable(false)]
-		int ILevelObj.ID_int
+        
+        new public Vector3D Pos
+        {
+            get { return new Vector3D(this[N_Translate]["X"], this[N_Translate]["Y"], this[N_Translate]["Z"]); }
+            set
+            {
+                if (ChildrenObjects.Count>0)
+                {
+                    //move all path points along so no object movement gets messed up when moved
+
+                    float deltaX = (Single)value.X - this[N_Translate]["X"];
+                    float deltaY = (Single)value.Y - this[N_Translate]["Y"];
+                    float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
+
+                    foreach (ILevelObj obj in ChildrenObjects)
+                    {
+                        Vector3D pos = obj.Pos;
+                        pos.X += deltaX;
+                        pos.Y += deltaY;
+                        pos.Z += deltaZ;
+                        obj.Pos = pos;
+                    }
+                }
+                this[N_Translate]["X"] = (Single)value.X;
+                this[N_Translate]["Y"] = (Single)value.Y;
+                this[N_Translate]["Z"] = (Single)value.Z;
+
+            }
+        }
+        
+
+        //		[Browsable(false)]
+        int ILevelObj.ID_int
 		{
 			get
 			{
