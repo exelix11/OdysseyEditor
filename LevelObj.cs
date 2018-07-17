@@ -104,91 +104,24 @@ namespace OdysseyExt
         }
 
 		public bool ContainsKey(string name) => Prop.ContainsKey(name);
-
-        [DisplayName("Position")]
-        [TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
-        [Category(" Transform")]
-        public dynamic _Pos
-        {
-            get => Properties[N_Translate];
-            set
-            {
-                if (Properties != null && Properties.ContainsKey("ControlPoints"))
-                {
-                    //move the controlPoints along as they aren't relative
-
-                    float deltaX = (Single)value["X"] - this[N_Translate]["X"];
-                    float deltaY = (Single)value["Y"] - this[N_Translate]["Y"];
-                    float deltaZ = (Single)value["Z"] - this[N_Translate]["Z"];
-
-                    Properties["ControlPoints"][0]["X"] += deltaX;
-                    Properties["ControlPoints"][0]["Y"] += deltaY;
-                    Properties["ControlPoints"][0]["Z"] += deltaZ;
-
-                    Properties["ControlPoints"][1]["X"] += deltaX;
-                    Properties["ControlPoints"][1]["Y"] += deltaY;
-                    Properties["ControlPoints"][1]["Z"] += deltaZ;
-                }
-
-                Properties[N_Translate] = value;
-            }
-        }
-
-        [System.ComponentModel.DisplayName("Rotation")]
-        [TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
-        [Category(" Transform")]
-        public dynamic _Rot
-        {
-            get => Properties[N_Rotate];
-            set
-            {
-                Properties[N_Rotate] = value;
-            }
-        }
-
-        [System.ComponentModel.DisplayName("Scale")]
-        [TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
-        [Category(" Transform")]
-        public dynamic _Scale
-        {
-            get => Properties[N_Scale];
-            set
-            {
-                Properties[N_Scale] = value;
-            }
-        }
-
-        [Browsable(false)]
-        public Vector3D Pos
+		
+		[DisplayName("Position")]
+		[TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
+		[Category(" Transform")]
+		public virtual Vector3D Pos
         {
             get { return new Vector3D(this[N_Translate]["X"], this[N_Translate]["Y"], this[N_Translate]["Z"]); }
-            set {
-                if (Properties != null && Properties.ContainsKey("ControlPoints"))
-                {
-                    //move the controlPoints along as they aren't relative
-
-                    float deltaX = (Single)value.X - this[N_Translate]["X"];
-                    float deltaY = (Single)value.Y - this[N_Translate]["Y"];
-                    float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
-
-                    Properties["ControlPoints"][0]["X"] += deltaX;
-                    Properties["ControlPoints"][0]["Y"] += deltaY;
-                    Properties["ControlPoints"][0]["Z"] += deltaZ;
-
-                    Properties["ControlPoints"][1]["X"] += deltaX;
-                    Properties["ControlPoints"][1]["Y"] += deltaY;
-                    Properties["ControlPoints"][1]["Z"] += deltaZ;
-                }
-
+            set {              
                 this[N_Translate]["X"] = (Single)value.X;
                 this[N_Translate]["Y"] = (Single)value.Y;
                 this[N_Translate]["Z"] = (Single)value.Z;
-
             }
         }
 
-        [Browsable(false)]
-        public Vector3D Rot
+		[System.ComponentModel.DisplayName("Rotation")]
+		[TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
+		[Category(" Transform")]
+		public Vector3D Rot
         {
             get { return new Vector3D(this[N_Rotate]["X"], this[N_Rotate]["Y"], this[N_Rotate]["Z"]); }
             set
@@ -218,31 +151,9 @@ namespace OdysseyExt
         [Browsable(false)]
         public Vector3D ModelView_Pos
         {
-            get { return new Vector3D(this[N_Translate]["X"], -this[N_Translate]["Z"], this[N_Translate]["Y"]); }
-            set {
-                if (Properties != null && Properties.ContainsKey("ControlPoints"))
-                {
-                    //move the controlPoints along as they aren't relative
-
-                    float deltaX = (Single)value.X - this[N_Translate]["X"];
-                    float deltaY = (Single)value.Z - this[N_Translate]["Y"];
-                    float deltaZ = -(Single)value.Y - this[N_Translate]["Z"];
-
-                    Properties["ControlPoints"][0]["X"] += deltaX;
-                    Properties["ControlPoints"][0]["Y"] += deltaY;
-                    Properties["ControlPoints"][0]["Z"] += deltaZ;
-
-                    Properties["ControlPoints"][1]["X"] += deltaX;
-                    Properties["ControlPoints"][1]["Y"] += deltaY;
-                    Properties["ControlPoints"][1]["Z"] += deltaZ;
-                }
-
-                this[N_Translate]["X"] = (Single)value.X;
-                this[N_Translate]["Y"] = (Single)value.Z;
-                this[N_Translate]["Z"] = -(Single)value.Y;
-
-            }
-        }
+            get => new Vector3D(this[N_Translate]["X"], -this[N_Translate]["Z"], this[N_Translate]["Y"]);
+			set => Pos = new Vector3D(value.X, value.Z, -value.Y);
+		}
 
         [Browsable(false)]
         public Vector3D ModelView_Rot
@@ -250,8 +161,10 @@ namespace OdysseyExt
             get { return new Vector3D(this[N_Rotate]["X"], -this[N_Rotate]["Z"], this[N_Rotate]["Y"]); } //TODO: check if it matches in-game
         }
 
-        [Browsable(false)]
-        public Vector3D Scale
+		[System.ComponentModel.DisplayName("Scale")]
+		[TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
+		[Category(" Transform")]
+		public Vector3D Scale
         {
             get { return new Vector3D(this[N_Scale]["X"], this[N_Scale]["Y"], this[N_Scale]["Z"]); }
             set

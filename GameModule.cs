@@ -141,7 +141,7 @@ namespace OdysseyExt
 		public IObjList CreateObjList(string name, IList<dynamic> baseList) =>
 			 new ObjList(name, baseList);
 
-		public ILevelObj NewObject() => new LevelObj();
+		public ILevelObj NewObject() => new LevelObj(); //TODO : show a dialog
 
 		public bool OpenLevelFile(string name, Stream file) => false;
 
