@@ -132,10 +132,10 @@ namespace OdysseyExt
 		public void SaveLevel(ILevel level) => File.WriteAllBytes(level.FilePath, ((Level)level).SaveSzs());
 		public void SaveLevelAs(ILevel level)
 		{
-			var sav = new SaveFileDialog() { Filter = LevelFormatFilter };
+			var sav = new SaveFileDialog() { Filter = LevelFormatFilter, FileName = level.FilePath };
 			if (sav.ShowDialog() != DialogResult.OK)
 				return;
-			File.WriteAllBytes(level.FilePath, ((Level)level).SaveSzs(sav.FileName));
+			File.WriteAllBytes(sav.FileName, ((Level)level).SaveSzs(sav.FileName));
 		}
 
 		public IObjList CreateObjList(string name, IList<dynamic> baseList) =>
