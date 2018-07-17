@@ -16,9 +16,37 @@ namespace OdysseyExt
 		public Point3D[] Points
 		{
 			get {
-				var res = new Point3D[ChildrenObjects.Count];
-				for (int i = 0; i < res.Length; i++)
-					res[i] = (ChildrenObjects[i].ModelView_Pos).ToPoint3D();
+				var res = new Point3D[1 + (ChildrenObjects.Count-1)*4 + (Prop["IsClosed"]?4:0)];
+
+                res[0] = (ChildrenObjects[0].ModelView_Pos).ToPoint3D();
+
+                for (int i = 0; i < ChildrenObjects.Count; i++)
+                {
+                    if (i < ChildrenObjects.Count - 1) {
+                        int subPoint = 0;
+                        Vector3D p0 = vectorFromDict(ChildrenObjects[i].Prop["Translate"]);
+                        Vector3D p1 = vectorFromDict(ChildrenObjects[i].Prop["ControlPoints"][1]);
+                        Vector3D p2 = vectorFromDict(ChildrenObjects[i + 1].Prop["ControlPoints"][0]);
+                        Vector3D p3 = vectorFromDict(ChildrenObjects[i + 1].Prop["Translate"]);
+                        for (float time = 0.25f; subPoint <= 3; time += 0.25f)
+                        {
+                            res[i * 4 + subPoint +1] = (GetPointAtTime(time, p0, p1, p2, p3)).ToPoint3D();
+                            subPoint++;
+                        }
+                    }else if (Prop["IsClosed"])
+                    {
+                        int subPoint = 0;
+                        Vector3D p0 = vectorFromDict(ChildrenObjects[i].Prop["Translate"]);
+                        Vector3D p1 = vectorFromDict(ChildrenObjects[i].Prop["ControlPoints"][1]);
+                        Vector3D p2 = vectorFromDict(ChildrenObjects[0].Prop["ControlPoints"][0]);
+                        Vector3D p3 = vectorFromDict(ChildrenObjects[0].Prop["Translate"]);
+                        for (float time = 0.25f; subPoint <= 3; time += 0.25f)
+                        {
+                            res[i * 4 + subPoint + 1] = (GetPointAtTime(time, p0, p1, p2, p3)).ToPoint3D();
+                            subPoint++;
+                        }
+                    }
+                }
 				return res;
 			}
 			set => throw new NotImplementedException();
@@ -105,5 +133,25 @@ namespace OdysseyExt
 			Prop[N_RailPoints].Clear();
 			foreach (var o in this) Prop[N_RailPoints].Add(o.Prop);
 		}
-	}
+
+        static public Vector3D GetPointAtTime(float t, Vector3D p0, Vector3D p1, Vector3D p2, Vector3D p3)
+        {
+            float u = 1f - t;
+            float tt = t * t;
+            float uu = u * u;
+            float uuu = uu * u;
+            float ttt = tt * t;
+
+            return       uuu    * p0 +
+                     3 * uu * t * p1 +
+                     3 * u  *tt * p2 +
+                         ttt    * p3;
+
+        }
+
+        static public Vector3D vectorFromDict(dynamic dict)
+        {
+            return new Vector3D(dict["X"], -dict["Z"], dict["Y"]);
+        }
+    }
 }
