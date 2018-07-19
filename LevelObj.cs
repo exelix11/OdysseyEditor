@@ -111,7 +111,24 @@ namespace OdysseyExt
 		public virtual Vector3D Pos
         {
             get { return new Vector3D(this[N_Translate]["X"], this[N_Translate]["Y"], this[N_Translate]["Z"]); }
-            set {              
+            set {
+                if (Properties != null && Properties.ContainsKey("ControlPoints"))
+                {
+                    //move the controlPoints along as they aren't relative
+
+                    float deltaX = (Single)value.X - this[N_Translate]["X"];
+                    float deltaY = (Single)value.Y - this[N_Translate]["Y"];
+                    float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
+
+                    Properties["ControlPoints"][0]["X"] += deltaX;
+                    Properties["ControlPoints"][0]["Y"] += deltaY;
+                    Properties["ControlPoints"][0]["Z"] += deltaZ;
+
+                    Properties["ControlPoints"][1]["X"] += deltaX;
+                    Properties["ControlPoints"][1]["Y"] += deltaY;
+                    Properties["ControlPoints"][1]["Z"] += deltaZ;
+                }
+
                 this[N_Translate]["X"] = (Single)value.X;
                 this[N_Translate]["Y"] = (Single)value.Y;
                 this[N_Translate]["Z"] = (Single)value.Z;
@@ -158,7 +175,7 @@ namespace OdysseyExt
         [Browsable(false)]
         public Vector3D ModelView_Rot
         {
-            get { return new Vector3D(this[N_Rotate]["X"], this[N_Rotate]["Z"], this[N_Rotate]["Y"]); } //TODO: check if it matches in-game
+            get { return new Vector3D(this[N_Rotate]["X"], -this[N_Rotate]["Z"], this[N_Rotate]["Y"]); } //TODO: check if it matches in-game
         }
 
 		[System.ComponentModel.DisplayName("Scale")]
@@ -166,7 +183,7 @@ namespace OdysseyExt
 		[Category(" Transform")]
 		public Vector3D Scale
         {
-            get { return new Vector3D(this[N_Scale]["X"], this[N_Scale]["Z"], this[N_Scale]["Y"]); }
+            get { return new Vector3D(this[N_Scale]["X"], this[N_Scale]["Y"], this[N_Scale]["Z"]); }
             set
             {
                 this[N_Scale]["X"] = (Single)value.X;
