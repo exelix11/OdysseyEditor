@@ -68,64 +68,8 @@ namespace OdysseyExt
             ToggleKclCollisions(false);
 			KCLModelItem.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
 
-            KCLObjectExport.Click += ExportCollisionFromObject; ;
+            KCLObjectExport.Click += delegate (object o, EventArgs a) {KclExport.export(GameFolder + "\\ObjectData") } ;
 
-        }
-
-        private void ExportCollisionFromObject(object sender, EventArgs e)
-        {
-            var opn = new OpenFileDialog() {
-                InitialDirectory = Directory.Exists(GameFolder + "\\ObjectData")? GameFolder + "\\ObjectData":null,
-                Filter = LevelFormatFilter,
-                Title = "Select an Object which has a collision model"
-            };
-
-            if (opn.ShowDialog() != DialogResult.OK)
-                return;
-            var szs = SARC.UnpackRam(YAZ0.Decompress(opn.FileName));
-            
-            foreach(string name in szs.Keys)
-            {
-                if (name.EndsWith(".kcl"))
-                {
-                    List<Color> typeColors = null;
-
-                    string attributeFileName = Path.GetFileNameWithoutExtension(name) + "Attribute.byml";
-                    if (szs.ContainsKey(attributeFileName))
-                    {
-                        var attributeFile = ByamlFile.Load(new MemoryStream(szs[attributeFileName]));
-
-                        typeColors = new List<Color>();
-                        foreach (dynamic attrib in attributeFile)
-                        {
-                            Console.WriteLine(attrib["FloorCode"]);
-                            switch (attrib["FloorCode"])
-                            {
-                                case "Ground":
-                                    typeColors.Add(Color.FromArgb(255,200, 200, 200)); break;
-                                case "DamageFire":
-                                case "DamageFire2D":
-                                    typeColors.Add(Color.FromArgb(255, 200, 50, 0)); break;
-                                case "Poison":
-                                case "Poison2D":
-                                    typeColors.Add(Color.FromArgb(255, 255, 0, 200)); break;
-                                case "SandSink":
-                                    typeColors.Add(Color.FromArgb(255, 10, 30, 0)); break;
-                                case "Skate":
-                                    typeColors.Add(Color.FromArgb(255, 0, 220, 255)); break;
-                                default:
-                                    typeColors.Add(Color.FromArgb(255, 255, 255, 255)); break;
-                            }
-                        }
-                    }
-                    var sav = new FolderBrowserDialog();
-
-                    if (sav.ShowDialog() != DialogResult.OK)
-                        return;
-
-                    KCLExt.PublicFunctions.WriteObj(new Smash_Forge.KCL(szs[name]), $"{sav.SelectedPath}\\{name}", typeColors);
-                }
-            }
         }
 
         void ToggleKclCollisions(bool? val = null)
