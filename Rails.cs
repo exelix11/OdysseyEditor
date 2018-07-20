@@ -12,6 +12,36 @@ using System.Windows.Media.Media3D;
 
 namespace OdysseyExt
 {
+	class RailPoint : LevelObj
+	{
+		public RailPoint(Dictionary<string, dynamic> baseNode) : base(baseNode) { }
+
+		public override Vector3D Pos
+		{
+			get => base.Pos;
+			set
+			{
+				if (Properties != null && Properties.ContainsKey(Rail.N_CtrlPoints))
+				{
+					//move the controlPoints along as they aren't relative
+
+					float deltaX = (Single)value.X - this[N_Translate]["X"];
+					float deltaY = (Single)value.Y - this[N_Translate]["Y"];
+					float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
+
+					Properties[Rail.N_CtrlPoints][0]["X"] += deltaX;
+					Properties[Rail.N_CtrlPoints][0]["Y"] += deltaY;
+					Properties[Rail.N_CtrlPoints][0]["Z"] += deltaZ;
+
+					Properties[Rail.N_CtrlPoints][1]["X"] += deltaX;
+					Properties[Rail.N_CtrlPoints][1]["Y"] += deltaY;
+					Properties[Rail.N_CtrlPoints][1]["Z"] += deltaZ;
+				}
+				base.Pos = value;
+			}
+		}
+	}
+
 	class Rail : LevelObj, IPathObj
 	{
 		public List<ILevelObj> ChildrenObjects { get; set; } = new List<ILevelObj>();
@@ -97,7 +127,7 @@ namespace OdysseyExt
 			if (Prop.ContainsKey(N_RailPoints))
 			{
 				foreach (var o in Prop[N_RailPoints])
-					ChildrenObjects.Add(new LevelObj(o));
+					ChildrenObjects.Add(new RailPoint(o));
 			}
 		}
 
@@ -126,24 +156,6 @@ namespace OdysseyExt
                         obj.Pos = pos;
                     }
                 }
-
-				if (Properties != null && Properties.ContainsKey(N_CtrlPoints))
-				{
-					//move the controlPoints along as they aren't relative
-
-					float deltaX = (Single)value.X - this[N_Translate]["X"];
-					float deltaY = (Single)value.Y - this[N_Translate]["Y"];
-					float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
-
-					Properties[N_CtrlPoints][0]["X"] += deltaX;
-					Properties[N_CtrlPoints][0]["Y"] += deltaY;
-					Properties[N_CtrlPoints][0]["Z"] += deltaZ;
-
-					Properties[N_CtrlPoints][1]["X"] += deltaX;
-					Properties[N_CtrlPoints][1]["Y"] += deltaY;
-					Properties[N_CtrlPoints][1]["Z"] += deltaZ;
-				}
-
 				base.Pos = value;
             }
         }        

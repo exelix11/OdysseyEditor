@@ -67,8 +67,7 @@ namespace OdysseyExt
             KCLObjectExport = MenuExtension.DropDownItems.Add("Export collision from Object");
             ToggleKclCollisions(false);
 			KCLModelItem.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
-
-            KCLObjectExport.Click += delegate (object o, EventArgs a) {KclExport.export(GameFolder + "\\ObjectData") } ;
+            KCLObjectExport.Click += delegate (object o, EventArgs a) { KclExport.ExportCollisionFromObject(GameFolder + "\\ObjectData");} ;
 
         }
 
