@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\EditorCore\EditorCore\bin\Release\Ext\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -107,6 +107,10 @@
     <ProjectReference Include="..\..\EditorCore\EditorCore\EditorCore.csproj">
       <Project>{df37f616-9cb6-4594-b30a-d5dd52ee1b3e}</Project>
       <Name>EditorCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\EditorCore\FileFormatPlugins\KCLExt\KCLExt.csproj">
+      <Project>{148f75f5-d3f0-4b69-8528-528c5215b351}</Project>
+      <Name>KCLExt</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\EditorCore\FileFormatPlugins\SARCLib\SARCExt.csproj">
       <Project>{9c220305-e452-4db0-9f99-186640268b4f}</Project>
