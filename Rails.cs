@@ -12,10 +12,41 @@ using System.Windows.Media.Media3D;
 
 namespace OdysseyExt
 {
+	class RailPoint : LevelObj
+	{
+		public RailPoint(Dictionary<string, dynamic> baseNode) : base(baseNode) { }
+
+		public override Vector3D Pos
+		{
+			get => base.Pos;
+			set
+			{
+				if (Properties != null && Properties.ContainsKey(Rail.N_CtrlPoints))
+				{
+					//move the controlPoints along as they aren't relative
+
+					float deltaX = (Single)value.X - this[N_Translate]["X"];
+					float deltaY = (Single)value.Y - this[N_Translate]["Y"];
+					float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
+
+					Properties[Rail.N_CtrlPoints][0]["X"] += deltaX;
+					Properties[Rail.N_CtrlPoints][0]["Y"] += deltaY;
+					Properties[Rail.N_CtrlPoints][0]["Z"] += deltaZ;
+
+					Properties[Rail.N_CtrlPoints][1]["X"] += deltaX;
+					Properties[Rail.N_CtrlPoints][1]["Y"] += deltaY;
+					Properties[Rail.N_CtrlPoints][1]["Z"] += deltaZ;
+				}
+				base.Pos = value;
+			}
+		}
+	}
+
 	class Rail : LevelObj, IPathObj
 	{
 		public List<ILevelObj> ChildrenObjects { get; set; } = new List<ILevelObj>();
 		public const string N_RailPoints = "RailPoints";
+		public const string N_CtrlPoints = "ControlPoints";
 
 		public bool IsClosed
 		{
@@ -45,17 +76,14 @@ namespace OdysseyExt
 			{
 				if (!IsBezier)
 					return RawPoints;
-				else
-					return GetBeizerPoints(); //TODO: implement ControlPoints in Pos set
-
-				// TODO: Use caching to avoid calculating multiple times the curve
-				//var curPoints = RawPoints;
-				//if (!curPoints.SequenceEqual(_cachedPositions))
-				//{
-				//	_cachedPositions = curPoints;
-				//	_cachedPoints = GetBeizerPoints(); 
-				//}
-				//return _cachedPoints;
+				
+				var curPoints = RawPoints;
+				if (!curPoints.SequenceEqual(_cachedPositions))
+				{
+					_cachedPositions = curPoints;
+					_cachedPoints = GetBeizerPoints();
+				}
+				return _cachedPoints;
 			}
 		}
 
@@ -71,16 +99,16 @@ namespace OdysseyExt
 				{
 					int subPoint = 0;
 					Vector3D p0 = ChildrenObjects[i].ModelView_Pos;
-					Vector3D p1 = vectorFromDict(ChildrenObjects[i].Prop["ControlPoints"][1]);
+					Vector3D p1 = vectorFromDict(ChildrenObjects[i].Prop[N_CtrlPoints][1]);
 					Vector3D p2, p3;
 					if (i < ChildrenObjects.Count - 1)
 					{
-						p2 = vectorFromDict(ChildrenObjects[i + 1].Prop["ControlPoints"][0]);
+						p2 = vectorFromDict(ChildrenObjects[i + 1].Prop[N_CtrlPoints][0]);
 						p3 = ChildrenObjects[i + 1].ModelView_Pos;
 					}
 					else if (IsClosed)
 					{
-						p2 = vectorFromDict(ChildrenObjects[0].Prop["ControlPoints"][0]);
+						p2 = vectorFromDict(ChildrenObjects[0].Prop[N_CtrlPoints][0]);
 						p3 = ChildrenObjects[0].ModelView_Pos;
 					}
 					else continue;
@@ -99,7 +127,7 @@ namespace OdysseyExt
 			if (Prop.ContainsKey(N_RailPoints))
 			{
 				foreach (var o in Prop[N_RailPoints])
-					ChildrenObjects.Add(new LevelObj(o));
+					ChildrenObjects.Add(new RailPoint(o));
 			}
 		}
 
@@ -110,12 +138,11 @@ namespace OdysseyExt
         {
             get => base.Pos;
             set
-            {
-                if (ChildrenObjects.Count>0)
-                {
-					_cachedPositions = new Point3D[0]; //invalidate cache;
-					//move all path points along so no object movement gets messed up when moved
+			{
+				_cachedPositions = new Point3D[0]; //invalidate cache;
 
+				if (ChildrenObjects.Count>0)
+                {
 					float deltaX = (Single)value.X - this[N_Translate]["X"];
                     float deltaY = (Single)value.Y - this[N_Translate]["Y"];
                     float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
