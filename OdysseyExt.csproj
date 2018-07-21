@@ -69,6 +69,7 @@
       <DependentUpon>LinksEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GameModule.cs" />
+    <Compile Include="KclExport.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelObj.cs" />
     <Compile Include="OdysseyExt.cs" />
