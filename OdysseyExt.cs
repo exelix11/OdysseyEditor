@@ -24,14 +24,7 @@ namespace OdysseyExt
 
 		public bool HasGameModule => true;
 		OdysseyModule _module = null;
-		public IGameModule GameModule
-		{
-			get
-			{
-				if (_module == null) _module = new OdysseyModule();
-				return _module;
-			}
-		}
+		public IGameModule GetNewGameModule() => new OdysseyModule();
 
 		public IFileHander[] Handlers => null;
 
