@@ -30,7 +30,7 @@ namespace OdysseyExt
 		}
 
 		[Browsable(false)]
-		public bool CanDrag { get; set; } = true; //if the model is static and doesn't appear in the list (mk8 courses)
+		public bool NotLevel { get; set; } = false; //if the model is static and doesn't appear in the list (mk8 courses)
 		
         public const string N_Translate = "Translate";
         public const string N_Rotate = "Rotate";
@@ -278,7 +278,7 @@ namespace OdysseyExt
 			Type t = context.GetType();
 			if (!(t.GetProperty("OwnerGrid").GetValue(context, null) is PropertyGrid targetGrid))
 				throw new Exception("context is not of the expected type");
-			if (!(targetGrid.ParentForm is EditorForm TargetForm))
+			if (!(targetGrid.ParentForm is IEditorFormContext TargetForm))
 				throw new Exception("context is not of the expected type");
 			if (node != null)
 			{
