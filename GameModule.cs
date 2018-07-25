@@ -5,17 +5,11 @@ using EditorCore.EditorFroms;
 using EditorCore.Interfaces;
 using EveryFileExplorer;
 using SARCExt;
-using Syroot.NintenTools.Byaml.Dynamic;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Design;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OdysseyExt
@@ -36,7 +30,7 @@ namespace OdysseyExt
 		public bool IsPropertyEditingSupported => true;
 		public string[] AutoHideList => new string[] { "AreaList", "SkyList" };
 
-		public EditorForm ViewForm { get; set; } = null;
+		public IEditorFormContext ViewForm { get; set; } = null;
 		public string GameFolder => ViewForm.GameFolder;
 
 		public string ModelsFolder => "OdysseyModels";
@@ -59,7 +53,7 @@ namespace OdysseyExt
 		ToolStripItem KCLModelItem;
         ToolStripItem KCLObjectExport;
         bool UseKclCollisions = false;
-		public void InitModule(EditorForm currentView)
+		public void InitModule(IEditorFormContext currentView)
 		{
 			ViewForm = currentView;
 			ViewForm.RegisterMenuStripExt(MenuExtension);
@@ -192,7 +186,7 @@ namespace OdysseyExt
 				else
 				{
 					MessageBox.Show($"The game texture archives will be extracted in {ModelsFolder}/GameTextures, this might take a while");
-					LoadingForm.ShowLoading(ViewForm, "Extracting textures...\r\nThis might take a while");
+					LoadingForm.ShowLoading(ViewForm as Form, "Extracting textures...\r\nThis might take a while");
 					foreach (var a in Directory.GetFiles($"{GameFolder}ObjectData\\").Where(x => x.EndsWith("Texture.szs")))
 					{
 						BfresLib.BfresConverter.GetTextures(
@@ -216,6 +210,8 @@ namespace OdysseyExt
 			}
 			return null;
 		}
+
+		public Tuple<string, dynamic> GetNewProperty(dynamic target) => AddBymlPropertyDialog.newProperty(target is IDictionary<string, dynamic>);
 	}
 
 	public class LinksConveter : System.ComponentModel.TypeConverter

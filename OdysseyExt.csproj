@@ -97,6 +97,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EditorCore\EditorCoreCommon\EditorCoreCommon.csproj">
+      <Project>{EE9882D0-F7A7-45E1-971A-1527B7E399F5}</Project>
+      <Name>EditorCoreCommon</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\EditorCore\FileFormatPlugins\BfresLib\BfresLib.csproj">
       <Project>{9313D751-0D97-4621-B6E2-783E6986A118}</Project>
       <Name>BfresLib</Name>
@@ -104,11 +109,6 @@
     <ProjectReference Include="..\..\EditorCore\FileFormatPlugins\ByamlLib\ByamlExt.csproj">
       <Project>{6d1801b8-7b24-49d6-83a1-e21ccc280d8e}</Project>
       <Name>ByamlExt</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\EditorCore\EditorCore\EditorCore.csproj">
-      <Project>{df37f616-9cb6-4594-b30a-d5dd52ee1b3e}</Project>
-      <Name>EditorCore</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\EditorCore\FileFormatPlugins\KCLExt\KCLExt.csproj">
       <Project>{148f75f5-d3f0-4b69-8528-528c5215b351}</Project>

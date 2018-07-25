@@ -15,9 +15,9 @@ namespace OdysseyExt.EditorFroms
     public partial class LinksEditor : Form, IEditorChild
     {
         IDictionary<string, dynamic> LinksNode;
-		public EditorForm ParentEditor { get; set; }
+		public IEditorFormContext ParentEditor { get; set; }
 
-		public LinksEditor(dynamic node, EditorForm _parent)
+		public LinksEditor(dynamic node, IEditorFormContext _parent)
         {
             InitializeComponent();
 			ParentEditor = _parent;
