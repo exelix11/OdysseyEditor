@@ -46,15 +46,15 @@ namespace OdysseyExt
 					if (sav.ShowDialog() != DialogResult.OK)
 						return;
 
-					var mod = new Smash_Forge.KCL(szs[name]).ToObj().toWritableObj();
+					var mod = new MarioKart.MK7.KCL(szs[name]).ToOBJ().toWritableObj();
 
 					if (typeColors != null)
 						for (int i = 0; i < mod.Materials.Count; i++)
 						{
 							if (i >= typeColors.Count) break;
-							mod.Materials[i].Colors.NX = typeColors[i].R / 255f;
-							mod.Materials[i].Colors.NY = typeColors[i].G / 255f;
-							mod.Materials[i].Colors.NZ = typeColors[i].B / 255f;
+							mod.Materials[i].Colors.normal.X = typeColors[i].R / 255f;
+							mod.Materials[i].Colors.normal.Y = typeColors[i].G / 255f;
+							mod.Materials[i].Colors.normal.Z = typeColors[i].B / 255f;
 						}
 
 					mod.WriteObj(sav.FileName);
