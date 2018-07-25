@@ -23,7 +23,7 @@ namespace OdysseyExt
 		public IClipboardExtension ClipboardExt => null;
 
 		public bool HasGameModule => true;
-		OdysseyModule _module = null;
+
 		public IGameModule GetNewGameModule() => new OdysseyModule();
 
 		public IFileHander[] Handlers => null;
