@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace OdysseyExt
 {
-	public class OdysseyModule : IGameModule
+	public class OdysseyModule : IGameModule, IEditingOptionsModule
 	{
 		public string ModuleName => "Odyssey level";
 
@@ -212,6 +212,52 @@ namespace OdysseyExt
 		}
 
 		public Tuple<string, dynamic> GetNewProperty(dynamic target) => AddBymlPropertyDialog.newProperty(target is IDictionary<string, dynamic>);
+
+
+		#region IEditingOptionsModule
+
+		ContextMenuStrip optionsMenu;
+
+		IDictionary<string, dynamic> editableLinks;
+
+		void IEditingOptionsModule.InitOptionsMenu(ref ContextMenuStrip baseMenu)
+		{
+			optionsMenu = baseMenu;
+			optionsMenu.Items["ObjectRightClickMenu_EditChildren"].Text = "Edit Links";
+		}
+
+		ContextMenuStrip IEditingOptionsModule.GetOptionsMenu(ILevelObj clickedObj)
+		{
+			if (clickedObj != null&&!(clickedObj is IPathObj))
+			{
+				ToolStripMenuItem linksMenu = optionsMenu.Items["ObjectRightClickMenu_EditChildren"] as ToolStripMenuItem;
+				editableLinks = clickedObj[LevelObj.N_Links];
+				linksMenu.DropDownItems.Clear();
+				foreach (string k in editableLinks.Keys)
+				{
+					var item = linksMenu.DropDownItems.Add(k);
+					item.Text = k;
+					item.Click += LinkMenuItem_Click;
+				}
+			}
+			return optionsMenu;
+		}
+
+		private void LinkMenuItem_Click(object sender, EventArgs e)
+		{
+			ViewForm.EditList(editableLinks[(sender as ToolStripItem).Text]);
+		}
+
+		void IEditingOptionsModule.InitActionButtons(ref ToolStrip baseButtonStrip)
+		{
+			
+		}
+
+		ToolStrip IEditingOptionsModule.GetActionButtons(IObjList activeObjList, ILevelObj selectedObj)
+		{
+			return null;
+		}
+		#endregion
 	}
 
 	public class LinksConveter : System.ComponentModel.TypeConverter

@@ -16,7 +16,37 @@ namespace OdysseyExt
 	{
 		public RailPoint(Dictionary<string, dynamic> baseNode) : base(baseNode) { }
 
-		public override Vector3D Pos
+        [TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
+        [Description("The positon of the ControlPointIn relative to this segment (ControlPoints are used for specifying how a curve goes in 3D")]
+        public Vector3D ControlPointInOffset
+        {
+            get => new Vector3D(Properties[Rail.N_CtrlPoints][0]["X"] - this[N_Translate]["X"],
+                                Properties[Rail.N_CtrlPoints][0]["Y"] - this[N_Translate]["Y"],
+                                Properties[Rail.N_CtrlPoints][0]["Z"] - this[N_Translate]["Z"]);
+            set
+            {
+                Properties[Rail.N_CtrlPoints][0]["X"] = value.X + this[N_Translate]["X"];
+                Properties[Rail.N_CtrlPoints][0]["Y"] = value.Y + this[N_Translate]["Y"];
+                Properties[Rail.N_CtrlPoints][0]["Z"] = value.Z + this[N_Translate]["Z"];
+            }
+        }
+
+        [TypeConverter(typeof(PropertyGridTypes.Vector3DConverter))]
+        [Description("The positon of the ControlPointOut relative to this segment (ControlPoints are used for specifying how a curve goes in 3D")]
+        public Vector3D ControlPointOutOffset
+        {
+            get => new Vector3D(Properties[Rail.N_CtrlPoints][1]["X"] - this[N_Translate]["X"],
+                                Properties[Rail.N_CtrlPoints][1]["Y"] - this[N_Translate]["Y"],
+                                Properties[Rail.N_CtrlPoints][1]["Z"] - this[N_Translate]["Z"]);
+            set
+            {
+                Properties[Rail.N_CtrlPoints][1]["X"] = value.X + this[N_Translate]["X"];
+                Properties[Rail.N_CtrlPoints][1]["Y"] = value.Y + this[N_Translate]["Y"];
+                Properties[Rail.N_CtrlPoints][1]["Z"] = value.Z + this[N_Translate]["Z"];
+            }
+        }
+
+        public override Vector3D Pos
 		{
 			get => base.Pos;
 			set
@@ -53,8 +83,9 @@ namespace OdysseyExt
 			get => this["IsClosed"] ?? false;
 			set => this["IsClosed"] = value;
 		}
-		
-		public bool IsBezier => (this["RailType"] ?? "") == "Bezier";
+
+        [Description("Specifies if this path uses curves")]
+        public bool IsBezier => (this["RailType"] ?? "") == "Bezier";
 
 		Point3D[] RawPoints
 		{
