@@ -30,7 +30,7 @@ namespace OdysseyExt
 		}
 
 		[Browsable(false)]
-		public bool NotLevel { get; set; } = false; //if the model is static and doesn't appear in the list (mk8 courses)
+		public bool ReadOnly { get; set; } = false; //if the model is static and doesn't appear in the list (mk8 courses)
 		
         public const string N_Translate = "Translate";
         public const string N_Rotate = "Rotate";
