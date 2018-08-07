@@ -43,6 +43,8 @@ namespace OdysseyExt
 
 		public bool IsHidden { get; set; } = false;
 		public string name { get; set; } = "";
+
+		public bool ReadOnly => false;
 	}
 
     public class Level : ILevel
