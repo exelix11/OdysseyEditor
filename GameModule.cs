@@ -177,13 +177,16 @@ namespace OdysseyExt
 			}
 		}
 
+		//This is static so it can be used by multiple instances
+		public static ObjectDatabase ObjsDB = null;
+
 		public void FormLoaded()
 		{
 			if (!Directory.Exists(ModelsFolder))
 			{
 				Directory.CreateDirectory(ModelsFolder);
 				ZipArchive z = new ZipArchive(new MemoryStream(Properties.Resources.baseModels));
-				z.ExtractToDirectory(ModelsFolder);
+				z.ExtractToDirectory(ModelsFolder);				
 			}
 			if (!Directory.Exists($"{ModelsFolder}/GameTextures"))
 			{
@@ -201,6 +204,14 @@ namespace OdysseyExt
 					}
 					LoadingForm.EndLoading();
 				}
+			}
+
+			if (ObjsDB == null)
+			{
+				if (!File.Exists(ModelsFolder + "/OdysseyDB.json"))
+					ObjsDB = ObjectDatabase.Deserialize(File.ReadAllText(ModelsFolder + "/OdysseyDB.json"));
+				else
+					ObjsDB = ObjectDatabase.Deserialize(Properties.Resources.OdysseyDB);
 			}
 		}
 
@@ -301,6 +312,26 @@ namespace OdysseyExt
 
 			KCLCollisions = TitleBarExtensions[0].DropDownItems.Add("");
 			KCLConverter = TitleBarExtensions[0].DropDownItems.Add("Export collisions from object");
-		} 
+
+#if DEBUG
+			var a  = TitleBarExtensions[0].DropDownItems.Add("CreateObjDb");
+			a.Click += delegate (object o, EventArgs e)
+			{
+				string s = new DebugStuff.ObjectDatabaseGenerator().Generate(Directory.GetFiles(@"D:\E\Desktop\HAX\Odyssey\StageData", "*Map.szs")).Serialize();
+				File.WriteAllText("db.json", s);
+			};
+
+			var b = TitleBarExtensions[0].DropDownItems.Add("TestObjDB");
+			b.Click += delegate (object o, EventArgs e)
+			{
+				ObjectDatabase obj = ObjectDatabase.Deserialize(File.ReadAllText("db.json"));
+				foreach (var k in obj.Keys)
+				{
+					var gameObj = obj.MakeObject(k);
+				}
+				MessageBox.Show("All objs have been instantiated");
+			};			
+#endif
+		}
 	}
 }
