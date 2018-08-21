@@ -50,13 +50,13 @@ namespace OdysseyExt
 		}
 
 		OdysseyMenuExt MenuExt;
-		bool UseKclCollisions = false;
+		//bool UseKclCollisions = false;
 		public void InitModule(IEditorFormContext currentView)
 		{
 			ViewForm = currentView;
 			MenuExt = new OdysseyMenuExt();
-			ToggleKclCollisions(false);
-			MenuExt.KCLCollisions.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
+			//ToggleKclCollisions(false);
+			//MenuExt.KCLCollisions.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
 			MenuExt.KCLConverter.Click += delegate (object o, EventArgs a) { KclExport.ExportCollisionFromObject(GameFolder + "\\ObjectData"); };
 			MenuExt.FileMenuExtensions[0].Click += SelectStage;
 			ViewForm.RegisterMenuExtension(MenuExt);
@@ -71,11 +71,11 @@ namespace OdysseyExt
 				ViewForm.LoadLevel($"{GameFolder}StageData\\{f.Result}Map.szs"); //Also it's possible to load a specific scenario with ViewForm.LoadLevel(new Level(f.result, id))
 		}
 
-        void ToggleKclCollisions(bool? val = null)
-		{
-			UseKclCollisions = val.HasValue ? val.Value : !UseKclCollisions;
-			MenuExt.KCLCollisions.Text = $"Use collisions as stage models : {(UseKclCollisions ? "ON" : "OFF")}";
-		}
+       // void ToggleKclCollisions(bool? val = null)
+		//{
+		//	UseKclCollisions = val.HasValue ? val.Value : !UseKclCollisions;
+		//	MenuExt.KCLCollisions.Text = $"Use collisions as stage models : {(UseKclCollisions ? "ON" : "OFF")}";
+		//}
 
 		public void ParseArgs(string[] Args)
 		{
@@ -208,7 +208,7 @@ namespace OdysseyExt
 
 			if (ObjsDB == null)
 			{
-				if (!File.Exists(ModelsFolder + "/OdysseyDB.json"))
+				if (File.Exists(ModelsFolder + "/OdysseyDB.json"))
 					ObjsDB = ObjectDatabase.Deserialize(File.ReadAllText(ModelsFolder + "/OdysseyDB.json"));
 				else
 					ObjsDB = ObjectDatabase.Deserialize(Properties.Resources.OdysseyDB);
@@ -296,7 +296,7 @@ namespace OdysseyExt
 		public ToolStripMenuItem[] ToolsMenuExtensions => null;
 		public ToolStripMenuItem[] TitleBarExtensions { get; internal set; }
 
-		internal ToolStripItem KCLCollisions;
+		//internal ToolStripItem KCLCollisions;
 		internal ToolStripItem KCLConverter;
 
 		internal OdysseyMenuExt()
@@ -310,7 +310,7 @@ namespace OdysseyExt
 					new ToolStripMenuItem("Odyssey")
 				};
 
-			KCLCollisions = TitleBarExtensions[0].DropDownItems.Add("");
+			//KCLCollisions = TitleBarExtensions[0].DropDownItems.Add("");
 			KCLConverter = TitleBarExtensions[0].DropDownItems.Add("Export collisions from object");
 
 #if DEBUG
