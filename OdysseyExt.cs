@@ -44,5 +44,10 @@ namespace OdysseyExt
 				}
 			});
 		}
+
+		public override string ToString()
+		{
+			return "Super Mario Odyssey Extension";
+		}
 	}
 }

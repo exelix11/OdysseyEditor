@@ -38,8 +38,12 @@ namespace OdysseyExt
         public const string N_Id = "Id";
         public const string N_Name = "UnitConfigName";
         public const string N_ModelName = "ModelName";
-        public const string N_Links = "Links"; 
-		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links };
+        public const string N_Links = "Links";
+		public const string N_LinkDest = "IsLinkDest";
+		public const string N_LayerConfigName = "LayerConfigName";
+		public const string N_PlacementFileName = "PlacementFileName";
+
+		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links, N_LinkDest, N_LayerConfigName , N_PlacementFileName };
 		public static readonly string[] ModelFieldNames = { N_Name, N_ModelName };
 
 		public const string N_UnitConfig = "UnitConfig";
@@ -74,6 +78,9 @@ namespace OdysseyExt
             Prop.Add(N_Links, new LinksNode());
             this[N_Name] = "newObj";
             this[N_Id] = "obj0";
+			this[N_LinkDest] = false;
+			this[N_LayerConfigName] = "Common";
+			this[N_PlacementFileName] = "EditorMap";
 			Prop.Add(N_UnitConfig, new Dictionary<string, dynamic>());
 			Prop[N_UnitConfig].Add(N_UnitConfigPos, new Dictionary<string, dynamic>());
 			Prop[N_UnitConfig][N_UnitConfigPos].Add("X", (Single)0);
