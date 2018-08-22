@@ -46,7 +46,18 @@ namespace OdysseyExt
             }
         }
 
-        public override Vector3D Pos
+		[Browsable(false)]
+		public override Vector3D ModelView_Pos
+		{
+			get => new Vector3D(this[N_Translate]["X"], -this[N_Translate]["Z"], this[N_Translate]["Y"]);
+			set
+			{
+				Pos = new Vector3D(value.X, value.Z, -value.Y);
+			}
+		}
+
+
+		public override Vector3D Pos
 		{
 			get => base.Pos;
 			set
@@ -189,9 +200,19 @@ namespace OdysseyExt
                 }
 				base.Pos = value;
             }
-        }        
+        }
 
-        [Browsable(false)]
+		[Browsable(false)]
+		public override Vector3D ModelView_Pos
+		{
+			get => new Vector3D(this[N_Translate]["X"], -this[N_Translate]["Z"], this[N_Translate]["Y"]);
+			set
+			{
+				Pos = new Vector3D(value.X, value.Z, -value.Y);
+			}
+		}
+
+		[Browsable(false)]
         int ILevelObj.ID_int
 		{
 			get

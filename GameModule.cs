@@ -62,8 +62,8 @@ namespace OdysseyExt
             ToggleKclCollisions(false);
 			KCLModelItem.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
             KCLObjectExport.Click += delegate (object o, EventArgs a) { KclExport.ExportCollisionFromObject(GameFolder + "\\ObjectData");} ;
-
-        }
+			
+		}
 
         void ToggleKclCollisions(bool? val = null)
 		{
@@ -139,7 +139,17 @@ namespace OdysseyExt
 		public IObjList CreateObjList(string name, IList<dynamic> baseList) =>
 			 new ObjList(name, baseList);
 
-		public ILevelObj NewObject() => new LevelObj(); //TODO : show a dialog
+		public ILevelObj NewObject()
+		{
+			string name = "";
+			//InputDialog.Show("Object Creation Wizard 2000", "Enter the name of the object", ref name);
+
+			var dlg = new EditorForms.AddObjectDialog();
+
+			if(dlg.ShowDialog()==DialogResult.Cancel) return null;
+
+			return new LevelObj(dlg.FileName, dlg.ModelName, ViewForm.CurList.name, "Map", dlg.ObjectName, "Undefined");
+		}
 
 		public bool OpenLevelFile(string name, Stream file) => false;
 
@@ -218,26 +228,53 @@ namespace OdysseyExt
 
 		ContextMenuStrip optionsMenu;
 
+		ToolStripItem addMoveKeyMenu;
+		ToolStripItem removeMoveKeyMenu;
+		ToolStripItem resetControlPointsMenu;
+
 		IDictionary<string, dynamic> editableLinks;
+		
 
 		void IEditingOptionsModule.InitOptionsMenu(ref ContextMenuStrip baseMenu)
 		{
 			optionsMenu = baseMenu;
 			optionsMenu.Items["ObjectRightClickMenu_EditChildren"].Text = "Edit Links";
+			addMoveKeyMenu = optionsMenu.Items.Add("Add MoveKey");
+			addMoveKeyMenu.Click += AddMoveKeyMenu_Click;
+
+			removeMoveKeyMenu = optionsMenu.Items.Add("Remove MoveKey");
+			removeMoveKeyMenu.Click += RemoveMoveKeyMenu_Click; ;
+
+			resetControlPointsMenu = optionsMenu.Items.Add("Make PathPoint Sharp");
+			resetControlPointsMenu.Click += ResetControlPointsMenu_Click; ;
+			//addMoveKeyMenu.Visible = false;
 		}
 
 		ContextMenuStrip IEditingOptionsModule.GetOptionsMenu(ILevelObj clickedObj)
 		{
-			if (clickedObj != null&&!(clickedObj is IPathObj))
+			addMoveKeyMenu.Visible = clickedObj != null && clickedObj.Properties.ContainsKey("MoveType") && !clickedObj.Properties[LevelObj.N_Links].ContainsKey("KeyMoveNext");
+			removeMoveKeyMenu.Visible = clickedObj != null && clickedObj.Properties.ContainsKey("MoveType") && clickedObj.Properties[LevelObj.N_Links].ContainsKey("KeyMoveNext");
+			resetControlPointsMenu.Visible = clickedObj != null && clickedObj is RailPoint;
+			if (clickedObj != null)
 			{
 				ToolStripMenuItem linksMenu = optionsMenu.Items["ObjectRightClickMenu_EditChildren"] as ToolStripMenuItem;
-				editableLinks = clickedObj[LevelObj.N_Links];
 				linksMenu.DropDownItems.Clear();
-				foreach (string k in editableLinks.Keys)
+
+				if (clickedObj is IPathObj)
 				{
-					var item = linksMenu.DropDownItems.Add(k);
-					item.Text = k;
-					item.Click += LinkMenuItem_Click;
+					linksMenu.Text = "Edit PathPoints";
+				}
+				else
+				{
+					linksMenu.Text = "Edit Links";
+					editableLinks = clickedObj[LevelObj.N_Links];
+
+					foreach (string k in editableLinks.Keys)
+					{
+						var item = linksMenu.DropDownItems.Add(k);
+						item.Text = k;
+						item.Click += LinkMenuItem_Click;
+					}
 				}
 			}
 			return optionsMenu;
@@ -246,6 +283,34 @@ namespace OdysseyExt
 		private void LinkMenuItem_Click(object sender, EventArgs e)
 		{
 			ViewForm.EditList(editableLinks[(sender as ToolStripItem).Text]);
+		}
+
+		private void AddMoveKeyMenu_Click(object sender, EventArgs e)
+		{
+			ILevelObj obj = optionsMenu.Tag as ILevelObj;
+			Dictionary<string, dynamic> copy = (obj.Clone() as ILevelObj).Properties;
+
+			obj[LevelObj.N_Links].Add("KeyMoveNext", new List<dynamic>());
+			obj[LevelObj.N_Links]["KeyMoveNext"].Add(copy);
+			ViewForm.EditList(editableLinks["KeyMoveNext"]);
+		}
+
+		private void RemoveMoveKeyMenu_Click(object sender, EventArgs e)
+		{
+			ILevelObj obj = optionsMenu.Tag as ILevelObj;
+			(obj[LevelObj.N_Links] as Dictionary<string, dynamic>).Remove("KeyMoveNext");
+		}
+
+		private void ResetControlPointsMenu_Click(object sender, EventArgs e)
+		{
+			ILevelObj obj = optionsMenu.Tag as ILevelObj;
+			obj.Properties[Rail.N_CtrlPoints][0]["X"] = obj.Properties[LevelObj.N_Translate]["X"];
+			obj.Properties[Rail.N_CtrlPoints][0]["Y"] = obj.Properties[LevelObj.N_Translate]["Y"];
+			obj.Properties[Rail.N_CtrlPoints][0]["Z"] = obj.Properties[LevelObj.N_Translate]["Z"];
+
+			obj.Properties[Rail.N_CtrlPoints][1]["X"] = obj.Properties[LevelObj.N_Translate]["X"];
+			obj.Properties[Rail.N_CtrlPoints][1]["Y"] = obj.Properties[LevelObj.N_Translate]["Y"];
+			obj.Properties[Rail.N_CtrlPoints][1]["Z"] = obj.Properties[LevelObj.N_Translate]["Z"];
 		}
 
 		void IEditingOptionsModule.InitActionButtons(ref ToolStrip baseButtonStrip)
