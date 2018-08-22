@@ -327,13 +327,13 @@ namespace OdysseyExt
 			a.Click += delegate (object o, EventArgs e)
 			{
 				string s = new DebugStuff.ObjectDatabaseGenerator().Generate(Directory.GetFiles(@"D:\E\Desktop\HAX\Odyssey\StageData", "*Map.szs")).Serialize();
-				File.WriteAllText("db.json", s);
+				File.WriteAllText("OdysseyDB.json", s);
 			};
 
 			var b = TitleBarExtensions[0].DropDownItems.Add("TestObjDB");
 			b.Click += delegate (object o, EventArgs e)
 			{
-				ObjectDatabase obj = ObjectDatabase.Deserialize(File.ReadAllText("db.json"));
+				ObjectDatabase obj = ObjectDatabase.Deserialize(File.ReadAllText("OdysseyDB.json"));
 				foreach (var k in obj.Keys)
 				{
 					var gameObj = obj.MakeObject(k);
