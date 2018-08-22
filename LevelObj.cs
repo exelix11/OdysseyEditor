@@ -44,6 +44,9 @@ namespace OdysseyExt
 		public const string N_PlacementFileName = "PlacementFileName";
 		public const string N_Comment = "comment";
 
+		public const string N_LinkReferenceList = "SrcUnitLayerList";
+		public const string N_ResourceCategory = "SrcUnitLayerList";
+
 		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links, N_LinkDest, N_LayerConfigName , N_PlacementFileName };
 		public static readonly string[] ModelFieldNames = { N_Name, N_ModelName };
 

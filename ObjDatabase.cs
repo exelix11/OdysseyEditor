@@ -15,6 +15,12 @@ namespace OdysseyExt
 
 		[Newtonsoft.Json.JsonProperty("D")]
 		public string Description;
+
+		[Newtonsoft.Json.JsonProperty("C")]
+		public string ParameterConfigName;
+
+		[Newtonsoft.Json.JsonProperty("M")]
+		public string[] ModelNames;
 	}
 
 	public class ObjectDatabase : Dictionary<string, ObjectDatabaseEntry>

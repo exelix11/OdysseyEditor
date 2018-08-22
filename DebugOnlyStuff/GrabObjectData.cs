@@ -176,6 +176,8 @@ namespace OdysseyExt.DebugStuff
 			public Dictionary<string, List<string>> LinkedObjs = null;
 			public List<string> DictWarn;
 			public List<string> ArrWarn;
+			public List<string> ModelNames = new List<string>();
+			public string ParameterConfigName = null;
 		}
 
 		Dictionary<string, internalObjectDatabaseEntry> Objs = new Dictionary<string, internalObjectDatabaseEntry>();
@@ -234,7 +236,9 @@ namespace OdysseyExt.DebugStuff
 				prop.Key == LevelObj.N_LinkDest ||
 				prop.Key == LevelObj.N_LayerConfigName ||
 				prop.Key == LevelObj.N_PlacementFileName ||
-				prop.Key == "comment") continue;
+				prop.Key == LevelObj.N_Comment || 
+				prop.Key == LevelObj.N_LinkReferenceList ||
+				prop.Key == LevelObj.N_ResourceCategory) continue;
 
 				if (prop.Value is IList<dynamic>)
 				{
@@ -248,6 +252,19 @@ namespace OdysseyExt.DebugStuff
 				}
 				else
 					data.Properties.Add(prop.Key, ((Type)prop.Value.GetType()).Name);
+			}
+
+			if (o.ContainsKey(LevelObj.N_ModelName) && o[LevelObj.N_ModelName] != null && !data.ModelNames.Contains(o[LevelObj.N_ModelName]))
+				data.ModelNames.Add(o[LevelObj.N_ModelName]);
+
+			if (o.ContainsKey(LevelObj.N_UnitConfig) && o[LevelObj.N_UnitConfig].ContainsKey(LevelObj.N_UnitConfigBaseClass))
+			{
+				if (data.ParameterConfigName != null)
+					Debug.Assert(data.ParameterConfigName == ((string)o[LevelObj.N_UnitConfig][LevelObj.N_UnitConfigBaseClass]));
+				data.ParameterConfigName = o[LevelObj.N_UnitConfig][LevelObj.N_UnitConfigBaseClass];
+
+				if (data.ParameterConfigName == o.Name)
+					data.ParameterConfigName = null;
 			}
 
 			if (o.ContainsKey(LevelObj.N_Links))
@@ -311,7 +328,9 @@ namespace OdysseyExt.DebugStuff
 					new ObjectDatabaseEntry()
 					{
 						Properties = entry.Value.Properties.Count == 0 ? null : entry.Value.Properties,
-						Description = desc
+						Description = desc,
+						ParameterConfigName = entry.Value.ParameterConfigName,
+						ModelNames = entry.Value.ModelNames.Count == 0 ? null : entry.Value.ModelNames.ToArray()
 					});
 			}
 			return res;
