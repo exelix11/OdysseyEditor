@@ -18,7 +18,7 @@ namespace OdysseyExt
 	{
 		public string ModuleName => "Odyssey level";
 
-		public Tuple<Type, Type>[] GetClassConverters { get; } = 
+		public Tuple<Type, Type>[] GetClassConverters { get; } =
 		new Tuple<Type, Type>[] {
 			new Tuple<Type, Type>(typeof(LinksNode), typeof(LinksConveter))
 		};
@@ -39,7 +39,7 @@ namespace OdysseyExt
 
 		public string GetPlaceholderModel(string name, string listName)
 		{
-			string PlaceholderModel ="UnkBlue.obj";
+			string PlaceholderModel = "UnkBlue.obj";
 			if (listName == "AreaList") PlaceholderModel = "UnkYellow.obj";
 			else if (listName == "DebugList") PlaceholderModel = "UnkRed.obj";
 			else if (listName == "CameraAreaInfo") PlaceholderModel = "UnkGreen.obj";
@@ -49,27 +49,33 @@ namespace OdysseyExt
 			return PlaceholderModel;
 		}
 
-		ToolStripMenuItem MenuExtension = new ToolStripMenuItem("Odyssey extension");
-		ToolStripItem KCLModelItem;
-        ToolStripItem KCLObjectExport;
-        bool UseKclCollisions = false;
+		OdysseyMenuExt MenuExt;
+		//bool UseKclCollisions = false;
 		public void InitModule(IEditorFormContext currentView)
 		{
 			ViewForm = currentView;
-			ViewForm.RegisterMenuStripExt(MenuExtension);
-			KCLModelItem = MenuExtension.DropDownItems.Add("");
-            KCLObjectExport = MenuExtension.DropDownItems.Add("Export collision from Object");
-            ToggleKclCollisions(false);
-			KCLModelItem.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
-            KCLObjectExport.Click += delegate (object o, EventArgs a) { KclExport.ExportCollisionFromObject(GameFolder + "\\ObjectData");} ;
-
-        }
-
-        void ToggleKclCollisions(bool? val = null)
-		{
-			UseKclCollisions = val.HasValue ? val.Value : !UseKclCollisions;
-			KCLModelItem.Text = $"Use collisions as stage models : {(UseKclCollisions ? "ON" : "OFF")}";
+			MenuExt = new OdysseyMenuExt();
+			//ToggleKclCollisions(false);
+			//MenuExt.KCLCollisions.Click += delegate (object o, EventArgs a) { ToggleKclCollisions(); };
+			MenuExt.KCLConverter.Click += delegate (object o, EventArgs a) { KclExport.ExportCollisionFromObject(GameFolder + "\\ObjectData"); };
+			MenuExt.FileMenuExtensions[0].Click += SelectStage;
+			ViewForm.RegisterMenuExtension(MenuExt);
 		}
+
+		void SelectStage(object o, EventArgs a)
+		{
+			var f = new StageSelectionForm();
+			f.ShowDialog();
+			if (f.Result == null) return;
+			if (File.Exists($"{GameFolder}StageData\\{f.Result}Map.szs")) 
+				ViewForm.LoadLevel($"{GameFolder}StageData\\{f.Result}Map.szs"); //Also it's possible to load a specific scenario with ViewForm.LoadLevel(new Level(f.result, id))
+		}
+
+       // void ToggleKclCollisions(bool? val = null)
+		//{
+		//	UseKclCollisions = val.HasValue ? val.Value : !UseKclCollisions;
+		//	MenuExt.KCLCollisions.Text = $"Use collisions as stage models : {(UseKclCollisions ? "ON" : "OFF")}";
+		//}
 
 		public void ParseArgs(string[] Args)
 		{
@@ -171,13 +177,16 @@ namespace OdysseyExt
 			}
 		}
 
+		//This is static so it can be used by multiple instances
+		public static ObjectDatabase ObjsDB = null;
+
 		public void FormLoaded()
 		{
 			if (!Directory.Exists(ModelsFolder))
 			{
 				Directory.CreateDirectory(ModelsFolder);
 				ZipArchive z = new ZipArchive(new MemoryStream(Properties.Resources.baseModels));
-				z.ExtractToDirectory(ModelsFolder);
+				z.ExtractToDirectory(ModelsFolder);				
 			}
 			if (!Directory.Exists($"{ModelsFolder}/GameTextures"))
 			{
@@ -195,6 +204,14 @@ namespace OdysseyExt
 					}
 					LoadingForm.EndLoading();
 				}
+			}
+
+			if (ObjsDB == null)
+			{
+				if (File.Exists(ModelsFolder + "/OdysseyDB.json"))
+					ObjsDB = ObjectDatabase.Deserialize(File.ReadAllText(ModelsFolder + "/OdysseyDB.json"));
+				else
+					ObjsDB = ObjectDatabase.Deserialize(Properties.Resources.OdysseyDB);
 			}
 		}
 
@@ -270,6 +287,51 @@ namespace OdysseyExt
 		public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
 		{
 			return "<Links>";
+		}
+	}
+
+	class OdysseyMenuExt : IMenuExtension
+	{
+		public ToolStripMenuItem[] FileMenuExtensions { get; internal set; }
+		public ToolStripMenuItem[] ToolsMenuExtensions => null;
+		public ToolStripMenuItem[] TitleBarExtensions { get; internal set; }
+
+		//internal ToolStripItem KCLCollisions;
+		internal ToolStripItem KCLConverter;
+
+		internal OdysseyMenuExt()
+		{
+			FileMenuExtensions = new ToolStripMenuItem[]
+				{
+					new ToolStripMenuItem("Select stage")
+				};
+			TitleBarExtensions = new ToolStripMenuItem[]
+				{
+					new ToolStripMenuItem("Odyssey")
+				};
+
+			//KCLCollisions = TitleBarExtensions[0].DropDownItems.Add("");
+			KCLConverter = TitleBarExtensions[0].DropDownItems.Add("Export collisions from object");
+
+#if DEBUG
+			var a  = TitleBarExtensions[0].DropDownItems.Add("CreateObjDb");
+			a.Click += delegate (object o, EventArgs e)
+			{
+				string s = new DebugStuff.ObjectDatabaseGenerator().Generate(Directory.GetFiles(@"D:\E\Desktop\HAX\Odyssey\StageData", "*Map.szs")).Serialize();
+				File.WriteAllText("db.json", s);
+			};
+
+			var b = TitleBarExtensions[0].DropDownItems.Add("TestObjDB");
+			b.Click += delegate (object o, EventArgs e)
+			{
+				ObjectDatabase obj = ObjectDatabase.Deserialize(File.ReadAllText("db.json"));
+				foreach (var k in obj.Keys)
+				{
+					var gameObj = obj.MakeObject(k);
+				}
+				MessageBox.Show("All objs have been instantiated");
+			};			
+#endif
 		}
 	}
 }

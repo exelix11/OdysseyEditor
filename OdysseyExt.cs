@@ -28,10 +28,26 @@ namespace OdysseyExt
 
 		public IFileHander[] Handlers => null;
 
+		const int ReleaseIndex = 2; 
 		public void CheckForUpdates()
 		{
+#if DEBUG
 			return;
-			//var res = await GitHubUpdateCheck.CheckForUpdates("Exelix11", "OdysseyEditor");
+#endif
+			Task.Run(async () => 
+			{
+				var res = await GitHubUpdateCheck.CheckForUpdates("Exelix11", "OdysseyEditor");
+				if (res.Index > ReleaseIndex)
+				{
+					if (MessageBox.Show("There is a new update for OdysseyEditor !\r\n\r\n" + res.Body + "\r\n\r\n Do you want to open the GitHub page ?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
+						System.Diagnostics.Process.Start(@"https://github.com/exelix11/OdysseyEditor/releases");
+				}
+			});
+		}
+
+		public override string ToString()
+		{
+			return "Super Mario Odyssey Extension";
 		}
 	}
 }
