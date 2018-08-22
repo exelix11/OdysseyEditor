@@ -17,8 +17,27 @@ using static EditorCore.PropertyGridTypes;
 
 namespace OdysseyExt
 {
-    public class LevelObj : ILevelObj
+	public class LevelObj : ILevelObj
 	{
+		public static string[] objListNames = new string[]
+		{
+			"ObjectList",
+			"AreaList",
+			"SkyList",
+			"NatureList",
+			"ZoneList",
+			"PlayerList",
+			"PlayerStartInfoList",
+			"PlayerAffectObjList",
+			"CheckPointList",
+			"DemoObjList",
+			"RaceList",
+			"SceneWatchObjList",
+			"ScenarioStartCameraList",
+			"CapMessageList",
+			"MapIconList",
+			"DebugList"
+		};
 		public static ILevelObj FromNode(dynamic bymlNode)
 		{
 			if (!(bymlNode is Dictionary<string, dynamic>)) throw new Exception("Not a dictionary");
@@ -30,73 +49,76 @@ namespace OdysseyExt
 		}
 
 		[Browsable(false)]
-		public bool ReadOnly { get; set; } = false; //if the model is static and doesn't appear in the list (mk8 courses)
-		
-        public const string N_Translate = "Translate";
-        public const string N_Rotate = "Rotate";
-        public const string N_Scale = "Scale";
-        public const string N_Id = "Id";
-        public const string N_Name = "UnitConfigName";
-        public const string N_ModelName = "ModelName";
-        public const string N_Links = "Links";
-		public const string N_LinkDest = "IsLinkDest";
-		public const string N_LayerConfigName = "LayerConfigName";
-		public const string N_PlacementFileName = "PlacementFileName";
+		public bool NotLevel { get; set; } = false; //if the model is static and doesn't appear in the list (mk8 courses)
 
-		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links, N_LinkDest, N_LayerConfigName , N_PlacementFileName };
+		public const string N_Comment = "comment";
+		public const string N_Translate = "Translate";
+		public const string N_Rotate = "Rotate";
+		public const string N_Scale = "Scale";
+		public const string N_Id = "Id";
+		public const string N_Name = "UnitConfigName";
+		public const string N_ModelName = "ModelName";
+		public const string N_Links = "Links";
+		public const string N_IsLinkDest = "IsLinkDest";
+		public const string N_Layer = "LayerConfigName";
+		public const string N_LinkReferenceList = "SrcUnitLayerList";
+		public const string N_StageName = "PlacementFileName";
+		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id, N_Name, N_Links, N_IsLinkDest, N_Layer,
+			N_UnitConfig, N_UnitConfigModel, N_UnitConfigPos, N_UnitConfigRot, N_UnitConfigScale, N_UnitConfigGenList, N_UnitConfigBaseClass, N_UnitConfigGenTarget };
 		public static readonly string[] ModelFieldNames = { N_Name, N_ModelName };
 
 		public const string N_UnitConfig = "UnitConfig";
+		public const string N_UnitConfigModel = "DisplayName";
 		public const string N_UnitConfigPos = "DisplayTranslate";
 		public const string N_UnitConfigRot = "DisplayRotate";
 		public const string N_UnitConfigScale = "DisplayScale";
+		public const string N_UnitConfigGenList = "GenerateCategory";
+		public const string N_UnitConfigBaseClass = "ParameterConfigName";
+		public const string N_UnitConfigGenTarget = "PlacementTargetFile";
+
 
 		[Browsable(false)]
 		public Dictionary<string, dynamic> Prop { get; set; } = new Dictionary<string, dynamic>();
 
 		public LevelObj(Dictionary<string, dynamic> bymlNode)
-        {
+		{
 			Prop = bymlNode;
 			if (Prop.ContainsKey(N_Links) && !(Prop[N_Links] is LinksNode)) Prop[N_Links] = new LinksNode(Prop[N_Links]);
-        }
-        
-		public LevelObj(bool empty = false)
-        {
-            if (empty) return;
-            Prop.Add(N_Translate, new Dictionary<string, dynamic>());
-            Prop[N_Translate].Add("X", (Single)0);
-            Prop[N_Translate].Add("Y", (Single)0);
-            Prop[N_Translate].Add("Z", (Single)0);
-            Prop.Add(N_Rotate, new Dictionary<string, dynamic>());
-            Prop[N_Rotate].Add("X", (Single)0);
-            Prop[N_Rotate].Add("Y", (Single)0);
-            Prop[N_Rotate].Add("Z", (Single)0);
-            Prop.Add(N_Scale, new Dictionary<string, dynamic>());
-            Prop[N_Scale].Add("X", (Single)1);
-            Prop[N_Scale].Add("Y", (Single)1);
-            Prop[N_Scale].Add("Z", (Single)1);
-            Prop.Add(N_Links, new LinksNode());
-            this[N_Name] = "newObj";
-            this[N_Id] = "obj0";
-			this[N_LinkDest] = false;
-			this[N_LayerConfigName] = "Common";
-			this[N_PlacementFileName] = "EditorMap";
-			Prop.Add(N_UnitConfig, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig].Add(N_UnitConfigPos, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("X", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("Y", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("Z", (Single)0);
-			Prop[N_UnitConfig].Add(N_UnitConfigRot, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("X", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("Y", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("Z", (Single)0);
-			Prop[N_UnitConfig].Add(N_UnitConfigScale, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("X", (Single)1);
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("Y", (Single)1);
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("Z", (Single)1);
 		}
 
-        public dynamic this [string name]
+		public LevelObj(string objName, string modelName, string listName, string fileType, string baseType, string stageName)
+		{
+			this[		   N_Comment] =           null;
+			this[		   N_Id] =                "none";
+			this[		   N_IsLinkDest] =	      !objListNames.Contains(listName);
+			this[		   N_Layer] =             "Common";
+			Prop.Add(	   N_Links,               new LinksNode());
+			this[		   N_ModelName] =         modelName;
+			this[		   N_StageName] =         stageName;
+			Prop.Add(	   N_Rotate,              vec3(0, 0, 0));
+			Prop.Add(	   N_Scale,               vec3(1, 1, 1));
+			Prop.Add(	   N_Translate,           vec3(0, 0, 0));
+			Prop.Add(	   N_UnitConfig,	      new Dictionary<string, dynamic>());
+	Prop[N_UnitConfig].Add(N_UnitConfigModel,     "");
+	Prop[N_UnitConfig].Add(N_UnitConfigPos,       vec3(0,0,0));
+	Prop[N_UnitConfig].Add(N_UnitConfigRot,       vec3(0,0,0));
+	Prop[N_UnitConfig].Add(N_UnitConfigScale,     vec3(1,1,1));
+	Prop[N_UnitConfig].Add(N_UnitConfigGenList,   listName);
+	Prop[N_UnitConfig].Add(N_UnitConfigBaseClass, baseType);
+	Prop[N_UnitConfig].Add(N_UnitConfigGenTarget, fileType);
+			this[          N_Name] =              objName;
+		}
+
+		public static Dictionary<string, dynamic> vec3(float x, float y, float z)
+		{
+			var vec = new Dictionary<string, dynamic>();
+			vec.Add("X", x);
+			vec.Add("Y", y);
+			vec.Add("Z", z);
+			return vec;
+		}
+
+		public dynamic this [string name]
         {
             get
             {
@@ -157,7 +179,7 @@ namespace OdysseyExt
         }
 
         [Browsable(false)]
-        public Vector3D ModelView_Pos
+        public virtual Vector3D ModelView_Pos
         {
             get => new Vector3D(this[N_Translate]["X"], -this[N_Translate]["Z"], this[N_Translate]["Y"]);
 			set => Pos = new Vector3D(value.X, value.Z, -value.Y);
