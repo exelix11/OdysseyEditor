@@ -43,6 +43,8 @@ namespace OdysseyExt
 
 		public bool IsHidden { get; set; } = false;
 		public string name { get; set; } = "";
+
+		public bool ReadOnly => false;
 	}
 
     public class Level : ILevel
@@ -73,9 +75,17 @@ namespace OdysseyExt
         {
             FilePath = path;
             Load(File.ReadAllBytes(path), scenarioIndex);
-        }        
+        }
 
-        void Load(byte[] file, int scenarioIndex = -1)
+		bool _internalFast;
+		internal Level(string path, int scenarioIndex , bool Fast )
+		{
+			_internalFast = Fast;
+			FilePath = path;
+			Load(File.ReadAllBytes(path), scenarioIndex);
+		}
+
+		void Load(byte[] file, int scenarioIndex = -1)
         {
             LevelFiles = SARC.UnpackRam(YAZ0.Decompress(file));
 			LoadByml(scenarioIndex);
@@ -84,7 +94,10 @@ namespace OdysseyExt
 		void LoadByml(int scenarioIndex = -1)
 		{
 			Stream s = new MemoryStream(LevelFiles[Path.GetFileNameWithoutExtension(FilePath) + ".byml"]);
-			LoadedLevelData = ByamlFile.Load(s, false, Syroot.BinaryData.ByteOrder.LittleEndian);
+			if (_internalFast)
+				LoadedLevelData = ByamlFile.FastLoad(s, false, Syroot.BinaryData.ByteOrder.LittleEndian);
+			else
+				LoadedLevelData = ByamlFile.Load(s, false, Syroot.BinaryData.ByteOrder.LittleEndian);
 
 			LoadObjects(scenarioIndex);
 		}
@@ -112,13 +125,6 @@ namespace OdysseyExt
 
 		public void SwitchScenario(int newScenario = -1)
 		{
-			if (newScenario == -1)
-			{
-				string res = "0";
-				var dialogResult = InputDialog.Show("Select scenario", $"enter scenario value [0,{LoadedLevelData.Count - 1}]", ref res);
-				if (dialogResult != System.Windows.Forms.DialogResult.OK) return;
-				if (!int.TryParse(res, out newScenario)) newScenario = 0;
-			}
 			if (_ScenarioIndex == newScenario) return;
 			_ScenarioIndex = newScenario;
 			LoadObjects(newScenario);
@@ -137,8 +143,10 @@ namespace OdysseyExt
 
 
         public byte[] ToByaml()
-        {
-            ApplyChangesToByml();
+		{
+			if (_internalFast)
+				throw new Exception("Can't save levels when fast load is enabled");
+			ApplyChangesToByml();
             MemoryStream mem = new MemoryStream();
             ByamlFile.Save(mem, LoadedLevelData, false, Syroot.BinaryData.ByteOrder.LittleEndian);
             var res = mem.ToArray();

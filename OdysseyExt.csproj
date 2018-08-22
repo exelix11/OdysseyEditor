@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\EditorCore\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="Syroot.BinaryData, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\EditorCore\packages\Syroot.IO.BinaryData.2.0.0\lib\net45\Syroot.BinaryData.dll</HintPath>
@@ -78,6 +81,7 @@
     <Compile Include="KclExport.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelObj.cs" />
+    <Compile Include="ObjDatabase.cs" />
     <Compile Include="OdysseyExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -86,6 +90,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rails.cs" />
+    <Compile Include="StageSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StageSelectionForm.Designer.cs">
+      <DependentUpon>StageSelectionForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EditorForms\AddObjectDialog.resx">
@@ -103,6 +113,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StageSelectionForm.resx">
+      <DependentUpon>StageSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +144,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Resources\baseModels.zip" />
+    <None Include="Resources\OdysseyDB.json" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -69,5 +69,14 @@ namespace OdysseyExt.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a {&quot;CameraArea&quot;:{&quot;P&quot;:{&quot;IsEndNoInterpole&quot;:&quot;Boolean&quot;,&quot;IsStartWhenCollideGround&quot;:&quot;Boolean&quot;,&quot;IsStartWhenInWater&quot;:&quot;Boolean&quot;,&quot;Priority&quot;:&quot;Int32&quot;},&quot;D&quot;:&quot;can contain links SwitchAppear [StageSwitch] TowerCameraAxis [TowerCameraAxis] Rail [RailCameraRailMoveMovie;Rail] SwitchKill [StageSwitch] InnerTowerCameraAxis [InnerTowerCameraAxis] NoDelete_RootArea [CameraArea] TargetLimitArea [CameraTargetLimitArea] Can contain array nodes [SrcUnitLayerList]&quot;},&quot;CameraStopArea&quot;:{&quot;P&quot;:{&quot;Priority&quot;:&quot;Int32&quot;},&quot;D&quot;:&quot;can contain links Swit [stringa troncata]&quot;;.
+        /// </summary>
+        internal static string OdysseyDB {
+            get {
+                return ResourceManager.GetString("OdysseyDB", resourceCulture);
+            }
+        }
     }
 }
