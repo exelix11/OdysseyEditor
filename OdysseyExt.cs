@@ -13,8 +13,10 @@ namespace OdysseyExt
 	{
 		public string ModuleName => "OdysseyEditor";
 		public string Author => "Exelix11";
-		public string ThanksTo => "KillzXGaming for the C# BFRES loader\r\ngdkchan for Bn" +
-								  "Txx\r\nEveryone from masterf0x/RedCarpet";
+		public string ExtraText =>$"Version {ReleaseIndex}\r\n" +
+			"Github repo: github.com/exelix11/OdysseyEditor\r\n"+
+			"Thanks to:\r\nKillzXGaming for the C# BFRES loader\r\ngdkchan for Bn" +
+			"Txx\r\nEveryone from masterf0x/RedCarpet";
 
 		public Version TargetVersion => new Version(1, 0, 0, 0);
 		
