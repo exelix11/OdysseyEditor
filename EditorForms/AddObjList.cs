@@ -29,5 +29,5 @@ namespace OdysseyExt.EditorFroms
             Result = null;
             Close();
         }
-    }
+	}
 }

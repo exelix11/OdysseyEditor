@@ -17,7 +17,7 @@ namespace OdysseyExt
     public class ObjList : List<ILevelObj>, IObjList
 	{
         IList<dynamic> bymlNode;
-        public ObjList(string _name, IList<dynamic> _bymlNode)
+        public ObjList(string _name, IList<dynamic> _bymlNode, ref int _HighestID) //for loading levels
         {
             name = _name;
             if (_bymlNode == null)
@@ -30,12 +30,28 @@ namespace OdysseyExt
             {
                 var obj = LevelObj.FromNode(o);
                 int objID = obj.ID_int;
-                if (Level._HighestID < objID) Level._HighestID = objID;
+                if (_HighestID < objID) _HighestID = objID;
                 this.Add(obj);
             }
         }
 
-        public void ApplyChanges()
+		public ObjList(string _name, IList<dynamic> _bymlNode) //for creating empty lists
+		{
+			name = _name;
+			if (_bymlNode == null)
+			{
+				bymlNode = new List<dynamic>();
+				return;
+			}
+			bymlNode = _bymlNode;
+			foreach (var o in bymlNode)
+			{
+				var obj = LevelObj.FromNode(o);
+				this.Add(obj);
+			}
+		}
+
+		public void ApplyChanges()
         {
             bymlNode.Clear();
             foreach (var o in this) bymlNode.Add(o.Prop);
@@ -56,8 +72,7 @@ namespace OdysseyExt
         int _ScenarioIndex = -1;
 		public int ScenarioCount => LoadedLevelData.Count;
 
-		public int HighestID { get => _HighestID; set => _HighestID = value; }
-		public static int _HighestID = 0;
+		public int HighestID { get; set; }
 
 		public Level(bool empty, string levelN)
         {
@@ -117,11 +132,13 @@ namespace OdysseyExt
             var Scenario = (Dictionary<string, dynamic>)LoadedLevelData[scenarioIndex];
             if (Scenario.Keys.Count == 0)
                 Scenario.Add("ObjectList", new List<dynamic>());
+			int id = 0;
             foreach (string k in Scenario.Keys)
             {
-                objs.Add(k, new ObjList(k,Scenario[k]));
+                objs.Add(k, new ObjList(k,Scenario[k],ref id));
             }
-        }
+			HighestID = id;
+		}
 
 		public void SwitchScenario(int newScenario = -1)
 		{

@@ -42,14 +42,19 @@ namespace OdysseyExt
 		public const string N_LinkDest = "IsLinkDest";
 		public const string N_LayerConfigName = "LayerConfigName";
 		public const string N_PlacementFileName = "PlacementFileName";
+		public const string N_Comment = "comment";
 
 		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links, N_LinkDest, N_LayerConfigName , N_PlacementFileName };
 		public static readonly string[] ModelFieldNames = { N_Name, N_ModelName };
 
 		public const string N_UnitConfig = "UnitConfig";
+		public const string N_UnitConfigModel = "DisplayName";
 		public const string N_UnitConfigPos = "DisplayTranslate";
 		public const string N_UnitConfigRot = "DisplayRotate";
 		public const string N_UnitConfigScale = "DisplayScale";
+		public const string N_UnitConfigGenList = "GenerateCategory";
+		public const string N_UnitConfigBaseClass = "ParameterConfigName";
+		public const string N_UnitConfigGenTarget = "PlacementTargetFile";
 
 		[Browsable(false)]
 		public Dictionary<string, dynamic> Prop { get; set; } = new Dictionary<string, dynamic>();
@@ -63,37 +68,24 @@ namespace OdysseyExt
 		public LevelObj(bool empty = false)
         {
             if (empty) return;
-            Prop.Add(N_Translate, new Dictionary<string, dynamic>());
-            Prop[N_Translate].Add("X", (Single)0);
-            Prop[N_Translate].Add("Y", (Single)0);
-            Prop[N_Translate].Add("Z", (Single)0);
-            Prop.Add(N_Rotate, new Dictionary<string, dynamic>());
-            Prop[N_Rotate].Add("X", (Single)0);
-            Prop[N_Rotate].Add("Y", (Single)0);
-            Prop[N_Rotate].Add("Z", (Single)0);
-            Prop.Add(N_Scale, new Dictionary<string, dynamic>());
-            Prop[N_Scale].Add("X", (Single)1);
-            Prop[N_Scale].Add("Y", (Single)1);
-            Prop[N_Scale].Add("Z", (Single)1);
-            Prop.Add(N_Links, new LinksNode());
+            Prop.Add(N_Translate, NodeVec3(0,0,0));
+			Prop.Add(N_Rotate, NodeVec3(0,0,0));
+			Prop.Add(N_Scale, NodeVec3(1, 1, 1));
+			Prop.Add(N_Links, new LinksNode());
             this[N_Name] = "newObj";
             this[N_Id] = "obj0";
 			this[N_LinkDest] = false;
 			this[N_LayerConfigName] = "Common";
-			this[N_PlacementFileName] = "EditorMap";
+			this[N_PlacementFileName] = "Undefined";
+			this[N_Comment] = null;
 			Prop.Add(N_UnitConfig, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig].Add(N_UnitConfigPos, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("X", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("Y", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigPos].Add("Z", (Single)0);
-			Prop[N_UnitConfig].Add(N_UnitConfigRot, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("X", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("Y", (Single)0);
-			Prop[N_UnitConfig][N_UnitConfigRot].Add("Z", (Single)0);
-			Prop[N_UnitConfig].Add(N_UnitConfigScale, new Dictionary<string, dynamic>());
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("X", (Single)1);
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("Y", (Single)1);
-			Prop[N_UnitConfig][N_UnitConfigScale].Add("Z", (Single)1);
+			Prop[N_UnitConfig].Add(N_UnitConfigPos, NodeVec3(0, 0, 0));
+			Prop[N_UnitConfig].Add(N_UnitConfigRot, NodeVec3(0, 0, 0));
+			Prop[N_UnitConfig].Add(N_UnitConfigScale, NodeVec3(1, 1, 1));
+			Prop[N_UnitConfig].Add(N_UnitConfigModel, "");
+			Prop[N_UnitConfig].Add(N_UnitConfigGenList, "Default");
+			Prop[N_UnitConfig].Add(N_UnitConfigBaseClass, "");
+			Prop[N_UnitConfig].Add(N_UnitConfigGenTarget, "Map");
 		}
 
         public dynamic this [string name]
@@ -244,6 +236,15 @@ namespace OdysseyExt
             get { return Prop; }
             set { Prop = value; }
         }
+
+		static Dictionary<string,dynamic> NodeVec3(float x, float y, float z)
+		{
+			var res = new Dictionary<string, dynamic>();
+			res.Add("X", (Single)x);
+			res.Add("Y", (Single)y);
+			res.Add("Z", (Single)z);
+			return res;
+		}
     }
 
     [Editor("OdysseyExt.LinksEditor", typeof(UITypeEditor))] //needs to be string to work (?)

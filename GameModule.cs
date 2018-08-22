@@ -145,7 +145,16 @@ namespace OdysseyExt
 		public IObjList CreateObjList(string name, IList<dynamic> baseList) =>
 			 new ObjList(name, baseList);
 
-		public ILevelObj NewObject() => new LevelObj(); //TODO : show a dialog
+		public ILevelObj NewObject()
+		{
+			var dlg = new EditorForms.AddObjectDialog();
+			dlg.ShowDialog();
+			if (dlg.Result == null) return null;
+			bool IsLink = ViewForm.CurList.name == Constants.LinkedListName;
+			dlg.Result[LevelObj.N_LinkDest] = IsLink;
+			dlg.Result[LevelObj.N_UnitConfig][LevelObj.N_UnitConfigGenList] = IsLink ? "ObjectList" : ViewForm.CurList.name;
+			return dlg.Result;
+		}
 
 		public bool OpenLevelFile(string name, Stream file) => false;
 
