@@ -19,9 +19,7 @@ namespace OdysseyExt
 			"Txx\r\nEveryone from masterf0x/RedCarpet";
 		
 		public IMenuExtension MenuExt => null;
-
-		public IClipboardExtension ClipboardExt => null;
-
+		
 		public bool HasGameModule => true;
 
 		public IGameModule GetNewGameModule() => new OdysseyModule();

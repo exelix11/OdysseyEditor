@@ -242,31 +242,32 @@ namespace OdysseyExt
 
 		#region IEditingOptionsModule
 
-		ContextMenuStrip optionsMenu;
-
+		ToolStripMenuItem optionsMenu;
 		IDictionary<string, dynamic> editableLinks;
 
 		void IEditingOptionsModule.InitOptionsMenu(ref ContextMenuStrip baseMenu)
 		{
-			optionsMenu = baseMenu;
-			optionsMenu.Items["ObjectRightClickMenu_EditChildren"].Text = "Edit Links";
+			optionsMenu = baseMenu.Items.Add("Edit Links") as ToolStripMenuItem;
 		}
 
-		ContextMenuStrip IEditingOptionsModule.GetOptionsMenu(ILevelObj clickedObj)
+		void IEditingOptionsModule.OptionsMenuOpening(ILevelObj clickedObj)
 		{
-			if (clickedObj != null&&!(clickedObj is IPathObj))
+			optionsMenu.DropDownItems.Clear();
+			if (clickedObj != null && !(clickedObj is IPathObj))
 			{
-				ToolStripMenuItem linksMenu = optionsMenu.Items["ObjectRightClickMenu_EditChildren"] as ToolStripMenuItem;
+				optionsMenu.Enabled = true;
 				editableLinks = clickedObj[LevelObj.N_Links];
-				linksMenu.DropDownItems.Clear();
 				foreach (string k in editableLinks.Keys)
 				{
-					var item = linksMenu.DropDownItems.Add(k);
+					var item = optionsMenu.DropDownItems.Add(k);
 					item.Text = k;
 					item.Click += LinkMenuItem_Click;
 				}
 			}
-			return optionsMenu;
+			else
+			{
+				optionsMenu.Enabled = false;
+			}
 		}
 
 		private void LinkMenuItem_Click(object sender, EventArgs e)
