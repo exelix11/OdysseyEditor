@@ -48,7 +48,7 @@ namespace OdysseyExt
 
 			foreach (var prop in this[name].Properties)
 			{
-				o.Properties.Add(prop.Key, GetValue(prop.Value));
+				o.Prop.Add(prop.Key, GetValue(prop.Value));
 			}
 			return o;
 		}

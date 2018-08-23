@@ -248,6 +248,7 @@ namespace OdysseyExt
 		void IEditingOptionsModule.InitOptionsMenu(ref ContextMenuStrip baseMenu)
 		{
 			optionsMenu = baseMenu.Items.Add("Edit Links") as ToolStripMenuItem;
+			optionsMenu.Enabled = false;
 		}
 
 		void IEditingOptionsModule.OptionsMenuOpening(ILevelObj clickedObj)
@@ -255,8 +256,9 @@ namespace OdysseyExt
 			optionsMenu.DropDownItems.Clear();
 			if (clickedObj != null && !(clickedObj is IPathObj))
 			{
-				optionsMenu.Enabled = true;
 				editableLinks = clickedObj[LevelObj.N_Links];
+				if (editableLinks.Keys.Count == 0) return;
+				optionsMenu.Enabled = true;
 				foreach (string k in editableLinks.Keys)
 				{
 					var item = optionsMenu.DropDownItems.Add(k);

@@ -20,14 +20,14 @@ namespace OdysseyExt
         [Description("The positon of the ControlPointIn relative to this segment (ControlPoints are used for specifying how a curve goes in 3D")]
         public Vector3D ControlPointInOffset
         {
-            get => new Vector3D(Properties[Rail.N_CtrlPoints][0]["X"] - this[N_Translate]["X"],
-                                Properties[Rail.N_CtrlPoints][0]["Y"] - this[N_Translate]["Y"],
-                                Properties[Rail.N_CtrlPoints][0]["Z"] - this[N_Translate]["Z"]);
+            get => new Vector3D(Prop[Rail.N_CtrlPoints][0]["X"] - this[N_Translate]["X"],
+                                Prop[Rail.N_CtrlPoints][0]["Y"] - this[N_Translate]["Y"],
+                                Prop[Rail.N_CtrlPoints][0]["Z"] - this[N_Translate]["Z"]);
             set
             {
-                Properties[Rail.N_CtrlPoints][0]["X"] = value.X + this[N_Translate]["X"];
-                Properties[Rail.N_CtrlPoints][0]["Y"] = value.Y + this[N_Translate]["Y"];
-                Properties[Rail.N_CtrlPoints][0]["Z"] = value.Z + this[N_Translate]["Z"];
+                Prop[Rail.N_CtrlPoints][0]["X"] = value.X + this[N_Translate]["X"];
+                Prop[Rail.N_CtrlPoints][0]["Y"] = value.Y + this[N_Translate]["Y"];
+                Prop[Rail.N_CtrlPoints][0]["Z"] = value.Z + this[N_Translate]["Z"];
             }
         }
 
@@ -35,14 +35,14 @@ namespace OdysseyExt
         [Description("The positon of the ControlPointOut relative to this segment (ControlPoints are used for specifying how a curve goes in 3D")]
         public Vector3D ControlPointOutOffset
         {
-            get => new Vector3D(Properties[Rail.N_CtrlPoints][1]["X"] - this[N_Translate]["X"],
-                                Properties[Rail.N_CtrlPoints][1]["Y"] - this[N_Translate]["Y"],
-                                Properties[Rail.N_CtrlPoints][1]["Z"] - this[N_Translate]["Z"]);
+            get => new Vector3D(Prop[Rail.N_CtrlPoints][1]["X"] - this[N_Translate]["X"],
+                                Prop[Rail.N_CtrlPoints][1]["Y"] - this[N_Translate]["Y"],
+                                Prop[Rail.N_CtrlPoints][1]["Z"] - this[N_Translate]["Z"]);
             set
             {
-                Properties[Rail.N_CtrlPoints][1]["X"] = value.X + this[N_Translate]["X"];
-                Properties[Rail.N_CtrlPoints][1]["Y"] = value.Y + this[N_Translate]["Y"];
-                Properties[Rail.N_CtrlPoints][1]["Z"] = value.Z + this[N_Translate]["Z"];
+                Prop[Rail.N_CtrlPoints][1]["X"] = value.X + this[N_Translate]["X"];
+                Prop[Rail.N_CtrlPoints][1]["Y"] = value.Y + this[N_Translate]["Y"];
+                Prop[Rail.N_CtrlPoints][1]["Z"] = value.Z + this[N_Translate]["Z"];
             }
         }
 
@@ -51,7 +51,7 @@ namespace OdysseyExt
 			get => base.Pos;
 			set
 			{
-				if (Properties != null && Properties.ContainsKey(Rail.N_CtrlPoints))
+				if (Prop != null && Prop.ContainsKey(Rail.N_CtrlPoints))
 				{
 					//move the controlPoints along as they aren't relative
 
@@ -59,13 +59,13 @@ namespace OdysseyExt
 					float deltaY = (Single)value.Y - this[N_Translate]["Y"];
 					float deltaZ = (Single)value.Z - this[N_Translate]["Z"];
 
-					Properties[Rail.N_CtrlPoints][0]["X"] += deltaX;
-					Properties[Rail.N_CtrlPoints][0]["Y"] += deltaY;
-					Properties[Rail.N_CtrlPoints][0]["Z"] += deltaZ;
+					Prop[Rail.N_CtrlPoints][0]["X"] += deltaX;
+					Prop[Rail.N_CtrlPoints][0]["Y"] += deltaY;
+					Prop[Rail.N_CtrlPoints][0]["Z"] += deltaZ;
 
-					Properties[Rail.N_CtrlPoints][1]["X"] += deltaX;
-					Properties[Rail.N_CtrlPoints][1]["Y"] += deltaY;
-					Properties[Rail.N_CtrlPoints][1]["Z"] += deltaZ;
+					Prop[Rail.N_CtrlPoints][1]["X"] += deltaX;
+					Prop[Rail.N_CtrlPoints][1]["Y"] += deltaY;
+					Prop[Rail.N_CtrlPoints][1]["Z"] += deltaZ;
 				}
 				base.Pos = value;
 			}
