@@ -80,7 +80,7 @@ namespace OdysseyExt
 			this[N_LinkDest] = false;
 			this[N_LayerConfigName] = "Common";
 			this[N_PlacementFileName] = "Undefined";
-			this[N_Comment] = null;
+			//this[N_Comment] = null;
 			Prop.Add(N_UnitConfig, new Dictionary<string, dynamic>());
 			Prop[N_UnitConfig].Add(N_UnitConfigPos, NodeVec3(0, 0, 0));
 			Prop[N_UnitConfig].Add(N_UnitConfigRot, NodeVec3(0, 0, 0));

@@ -16,7 +16,7 @@ namespace OdysseyExt
 {
 	public class OdysseyModule : IGameModule, IEditingOptionsModule
 	{
-		public string ModuleName => "Odyssey level";
+		public string ModuleName => "Odyssey level editor";
 
 		public Tuple<Type, Type>[] GetClassConverters { get; } =
 		new Tuple<Type, Type>[] {
