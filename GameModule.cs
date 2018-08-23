@@ -16,7 +16,7 @@ namespace OdysseyExt
 {
 	public class OdysseyModule : IGameModule, IEditingOptionsModule
 	{
-		public string ModuleName => "Odyssey level";
+		public string ModuleName => "Odyssey level editor";
 
 		public Tuple<Type, Type>[] GetClassConverters { get; } =
 		new Tuple<Type, Type>[] {
@@ -242,31 +242,34 @@ namespace OdysseyExt
 
 		#region IEditingOptionsModule
 
-		ContextMenuStrip optionsMenu;
-
+		ToolStripMenuItem optionsMenu;
 		IDictionary<string, dynamic> editableLinks;
 
 		void IEditingOptionsModule.InitOptionsMenu(ref ContextMenuStrip baseMenu)
 		{
-			optionsMenu = baseMenu;
-			optionsMenu.Items["ObjectRightClickMenu_EditChildren"].Text = "Edit Links";
+			optionsMenu = baseMenu.Items.Add("Edit Links") as ToolStripMenuItem;
+			optionsMenu.Enabled = false;
 		}
 
-		ContextMenuStrip IEditingOptionsModule.GetOptionsMenu(ILevelObj clickedObj)
+		void IEditingOptionsModule.OptionsMenuOpening(ILevelObj clickedObj)
 		{
-			if (clickedObj != null&&!(clickedObj is IPathObj))
+			optionsMenu.DropDownItems.Clear();
+			if (clickedObj != null && !(clickedObj is IPathObj))
 			{
-				ToolStripMenuItem linksMenu = optionsMenu.Items["ObjectRightClickMenu_EditChildren"] as ToolStripMenuItem;
 				editableLinks = clickedObj[LevelObj.N_Links];
-				linksMenu.DropDownItems.Clear();
+				if (editableLinks.Keys.Count == 0) return;
+				optionsMenu.Enabled = true;
 				foreach (string k in editableLinks.Keys)
 				{
-					var item = linksMenu.DropDownItems.Add(k);
+					var item = optionsMenu.DropDownItems.Add(k);
 					item.Text = k;
 					item.Click += LinkMenuItem_Click;
 				}
 			}
-			return optionsMenu;
+			else
+			{
+				optionsMenu.Enabled = false;
+			}
 		}
 
 		private void LinkMenuItem_Click(object sender, EventArgs e)
@@ -327,13 +330,13 @@ namespace OdysseyExt
 			a.Click += delegate (object o, EventArgs e)
 			{
 				string s = new DebugStuff.ObjectDatabaseGenerator().Generate(Directory.GetFiles(@"D:\E\Desktop\HAX\Odyssey\StageData", "*Map.szs")).Serialize();
-				File.WriteAllText("db.json", s);
+				File.WriteAllText("OdysseyDB.json", s);
 			};
 
 			var b = TitleBarExtensions[0].DropDownItems.Add("TestObjDB");
 			b.Click += delegate (object o, EventArgs e)
 			{
-				ObjectDatabase obj = ObjectDatabase.Deserialize(File.ReadAllText("db.json"));
+				ObjectDatabase obj = ObjectDatabase.Deserialize(File.ReadAllText("OdysseyDB.json"));
 				foreach (var k in obj.Keys)
 				{
 					var gameObj = obj.MakeObject(k);

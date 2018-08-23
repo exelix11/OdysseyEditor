@@ -15,6 +15,12 @@ namespace OdysseyExt
 
 		[Newtonsoft.Json.JsonProperty("D")]
 		public string Description;
+
+		[Newtonsoft.Json.JsonProperty("C")]
+		public string ParameterConfigName;
+
+		[Newtonsoft.Json.JsonProperty("M")]
+		public string[] ModelNames;
 	}
 
 	public class ObjectDatabase : Dictionary<string, ObjectDatabaseEntry>
@@ -42,7 +48,7 @@ namespace OdysseyExt
 
 			foreach (var prop in this[name].Properties)
 			{
-				o.Properties.Add(prop.Key, GetValue(prop.Value));
+				o.Prop.Add(prop.Key, GetValue(prop.Value));
 			}
 			return o;
 		}
