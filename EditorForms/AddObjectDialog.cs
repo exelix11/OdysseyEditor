@@ -35,10 +35,23 @@ namespace OdysseyExt.EditorForms
 				var desc = OdysseyModule.ObjsDB[comboBox1.Text].Description;
 				tbDescription.Text = desc == null ? "No Desription Provided." : desc;
 				btnCreate.Enabled = true;
+				cbModelName.Items.Clear();
+				if (OdysseyModule.ObjsDB[comboBox1.Text].ModelNames != null)
+				{ 
+					cbModelName.Items.AddRange(OdysseyModule.ObjsDB[comboBox1.Text].ModelNames);
+					cbModelName.SelectedIndex = 0;
+				}
+
+				if (OdysseyModule.ObjsDB[comboBox1.Text].ParameterConfigName != null)
+					CbParConfigName.Text = OdysseyModule.ObjsDB[comboBox1.Text].ParameterConfigName;
+				else
+					CbParConfigName.Text = comboBox1.Text;
+
 			}
 			else
 			{
 				btnCreate.Enabled = true;
+				CbParConfigName.Text = comboBox1.Text;
 				tbDescription.Text = "This Object seems not to be in the game.\r\n" +
 									 "You will create an empty object with the common properties only (like Position, Rotation, Scale etc.).";
 			}
@@ -60,19 +73,16 @@ namespace OdysseyExt.EditorForms
 				Result.Name = comboBox1.Text;
 			}
 
-			if (tbFileName.Text.Trim() != "")
-				Result[LevelObj.N_PlacementFileName] = tbFileName.Text.Trim();
+			if (cbModelName.Text.Trim() != "")
+				Result[LevelObj.N_ModelName] = cbModelName.Text.Trim();
 
-			if (tbModelName.Text.Trim() != "")
-				Result[LevelObj.N_ModelName] = tbModelName.Text.Trim();
-
-			Result[LevelObj.N_UnitConfig][LevelObj.N_UnitConfigBaseClass] = ParConfigName.Text == "" ? comboBox1.Text : ParConfigName.Text;
+			Result[LevelObj.N_UnitConfig][LevelObj.N_UnitConfigBaseClass] = CbParConfigName.Text == "" ? comboBox1.Text : CbParConfigName.Text;
 		}
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
 			Result = null;
 			this.Close();
-		}		
+		}
 	}
 }

@@ -44,6 +44,9 @@ namespace OdysseyExt
 		public const string N_PlacementFileName = "PlacementFileName";
 		public const string N_Comment = "comment";
 
+		public const string N_LinkReferenceList = "SrcUnitLayerList";
+		public const string N_ResourceCategory = "SrcUnitLayerList";
+
 		public static readonly string[] CantRemoveNames = { N_Translate, N_Rotate, N_Scale, N_Id , N_Name , N_Links, N_LinkDest, N_LayerConfigName , N_PlacementFileName };
 		public static readonly string[] ModelFieldNames = { N_Name, N_ModelName };
 
@@ -56,7 +59,9 @@ namespace OdysseyExt
 		public const string N_UnitConfigBaseClass = "ParameterConfigName";
 		public const string N_UnitConfigGenTarget = "PlacementTargetFile";
 
-		[Browsable(false)]
+		[System.ComponentModel.DisplayName("Properties")]
+		[TypeConverter(typeof(DictionaryConverter))]
+		[Description("This contains every property of this object")]
 		public Dictionary<string, dynamic> Prop { get; set; } = new Dictionary<string, dynamic>();
 
 		public LevelObj(Dictionary<string, dynamic> bymlNode)
@@ -77,7 +82,7 @@ namespace OdysseyExt
 			this[N_LinkDest] = false;
 			this[N_LayerConfigName] = "Common";
 			this[N_PlacementFileName] = "Undefined";
-			this[N_Comment] = null;
+			//this[N_Comment] = null;
 			Prop.Add(N_UnitConfig, new Dictionary<string, dynamic>());
 			Prop[N_UnitConfig].Add(N_UnitConfigPos, NodeVec3(0, 0, 0));
 			Prop[N_UnitConfig].Add(N_UnitConfigRot, NodeVec3(0, 0, 0));
@@ -227,16 +232,7 @@ namespace OdysseyExt
         {
             return Clone();
         }
-
-        //[Editor(typeof(LevelObjEditor), typeof(UITypeEditor))]
-        [TypeConverter(typeof(DictionaryConverter))]
-        [Description("This contains every property of this object")]
-        public Dictionary<string, dynamic> Properties
-        {
-            get { return Prop; }
-            set { Prop = value; }
-        }
-
+		
 		static Dictionary<string,dynamic> NodeVec3(float x, float y, float z)
 		{
 			var res = new Dictionary<string, dynamic>();
