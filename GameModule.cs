@@ -259,8 +259,8 @@ namespace OdysseyExt
 
 		void IEditingOptionsModule.OptionsMenuOpening(ILevelObj clickedObj)
 		{
-			addMoveKeyMenu.Visible = clickedObj != null && clickedObj.Prop.ContainsKey("MoveType") && !clickedObj.Prop[LevelObj.N_Links].ContainsKey("KeyMoveNext");
-			removeMoveKeyMenu.Visible = clickedObj != null && clickedObj.Prop.ContainsKey("MoveType") && clickedObj.Prop[LevelObj.N_Links].ContainsKey("KeyMoveNext");
+			addMoveKeyMenu.Visible = clickedObj != null && clickedObj.Prop[LevelObj.N_UnitConfig][LevelObj.N_UnitConfigBaseClass] == "KeyMoveMapParts" && !clickedObj.Prop[LevelObj.N_Links].ContainsKey("KeyMoveNext");
+			removeMoveKeyMenu.Visible = clickedObj != null && clickedObj.Prop[LevelObj.N_UnitConfig][LevelObj.N_UnitConfigBaseClass] == "KeyMoveMapParts" && clickedObj.Prop[LevelObj.N_Links].ContainsKey("KeyMoveNext");
 			resetControlPointsMenu.Visible = clickedObj != null && clickedObj is RailPoint;
 			if (clickedObj != null)
 			{
