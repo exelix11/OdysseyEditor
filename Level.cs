@@ -74,6 +74,9 @@ namespace OdysseyExt
 
 		public int HighestID { get; set; }
 
+		static BymlFileData makeOdysseyByml(dynamic root) => 
+			new BymlFileData { Version = 3, byteOrder = Syroot.BinaryData.ByteOrder.LittleEndian, SupportPaths = false, RootNode = root };
+
 		public Level(bool empty, string levelN)
         {
             if (!empty) throw new Exception();
@@ -82,7 +85,9 @@ namespace OdysseyExt
             LoadedLevelData = new List<dynamic>();
             for (int i = 0; i < 15; i++)
                 LoadedLevelData[i] = new Dictionary<string, dynamic>();
-            LevelFiles.Add(Path.GetFileNameWithoutExtension(FilePath) + ".byml", ByamlFile.Save(LoadedLevelData,false, Syroot.BinaryData.ByteOrder.LittleEndian));
+            LevelFiles.Add(
+				Path.GetFileNameWithoutExtension(FilePath) + ".byml",
+				ByamlFile.SaveN(makeOdysseyByml(LoadedLevelData)));
 			LoadByml();
         }
 
@@ -110,9 +115,9 @@ namespace OdysseyExt
 		{
 			Stream s = new MemoryStream(LevelFiles[Path.GetFileNameWithoutExtension(FilePath) + ".byml"]);
 			if (_internalFast)
-				LoadedLevelData = ByamlFile.FastLoad(s, false, Syroot.BinaryData.ByteOrder.LittleEndian);
+				LoadedLevelData = ByamlFile.FastLoadN(s, false, Syroot.BinaryData.ByteOrder.LittleEndian).RootNode;
 			else
-				LoadedLevelData = ByamlFile.Load(s, false, Syroot.BinaryData.ByteOrder.LittleEndian);
+				LoadedLevelData = ByamlFile.LoadN(s, false, Syroot.BinaryData.ByteOrder.LittleEndian).RootNode;
 
 			LoadObjects(scenarioIndex);
 		}
@@ -165,7 +170,7 @@ namespace OdysseyExt
 				throw new Exception("Can't save levels when fast load is enabled");
 			ApplyChangesToByml();
             MemoryStream mem = new MemoryStream();
-            ByamlFile.Save(mem, LoadedLevelData, false, Syroot.BinaryData.ByteOrder.LittleEndian);
+            ByamlFile.SaveN(mem, makeOdysseyByml(LoadedLevelData));
             var res = mem.ToArray();
             return res;
         }

@@ -64,10 +64,10 @@ namespace OdysseyExt
 
 		static List<Color> GetKCLColors(byte[] byml)
 		{
-			var attributeFile = ByamlFile.FastLoad(new MemoryStream(byml));
+			var attributeFile = ByamlFile.FastLoadN(new MemoryStream(byml));
 
 			var typeColors = new List<Color>();
-			foreach (dynamic attrib in attributeFile)
+			foreach (dynamic attrib in attributeFile.RootNode)
 			{
 				Console.WriteLine(attrib["FloorCode"]);
 				switch (attrib["FloorCode"])
