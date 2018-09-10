@@ -1,5 +1,5 @@
 ﻿using EditorCore;
-using Syroot.NintenTools.Byaml;
+using ByamlExt.Byaml;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
