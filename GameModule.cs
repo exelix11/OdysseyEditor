@@ -35,7 +35,7 @@ namespace OdysseyExt
 
 		public string ModelsFolder => "OdysseyModels";
 
-		public bool ConvertModelFile(string ObjName, string path) => BfresConverter.Convert(BfresFromSzs(ObjName), path);
+		public bool ConvertModelFile(string ObjName, string path) => BfresConverter.Convert(BfresFromSzs(ObjName), path) != null;
 
 		public string GetPlaceholderModel(string name, string listName)
 		{
