@@ -147,7 +147,15 @@ namespace OdysseyExt
 			return dlg.Result;
 		}
 
-		public bool OpenLevelFile(string name, Stream file) => false;
+		public bool OpenLevelFile(string name, Stream file)
+		{
+			if (name.EndsWith(".byml"))
+			{
+				ByamlViewer.OpenByml(file, name, false, file,true);
+				return true;
+			}
+			return false;
+		}
 
 		public string AddObjList(ILevel level)
 		{

@@ -126,6 +126,13 @@ namespace OdysseyExt
         {
 			objs = new Dictionary<string, IObjList>();
 
+			if (ScenarioCount == 0)
+			{
+				System.Windows.Forms.MessageBox.Show("This file is empty, new scenarios will be created");
+				for (int i = 0; i < 15; i++)
+					((List<dynamic>)LoadedLevelData).Add(new Dictionary<string, dynamic>());
+			}
+
 			if (scenarioIndex == -1)
             {
                 string res = "0";
