@@ -111,11 +111,18 @@ namespace OdysseyExt
 					return null;
 				file = opn.FileName;
 			}
+			try
+			{
 #if DEBUG
-			return new Level(file, 0);
+				return new Level(file, -1);
 #else
-			return new Level(file, -1);
+				return new Level(file, -1);
 #endif
+			}
+			catch (OperationCanceledException)
+			{
+				return null;
+			}
 		}
 
 		public ILevel NewLevel(string file = null)
