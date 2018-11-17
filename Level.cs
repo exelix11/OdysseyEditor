@@ -136,7 +136,8 @@ namespace OdysseyExt
 			if (scenarioIndex == -1)
             {
                 string res = "0";
-                InputDialog.Show("Select scenario", $"enter scenario value [0,{ScenarioCount - 1}]", ref res);
+				if (InputDialog.Show("Select scenario", $"enter scenario value [0,{ScenarioCount - 1}]", ref res) != System.Windows.Forms.DialogResult.OK)
+					throw new OperationCanceledException("Operation cancelled");
                 if (!int.TryParse(res, out scenarioIndex)) scenarioIndex = 0;
             }
 
