@@ -336,7 +336,23 @@ namespace OdysseyExt
 			baseButtonStrip.Items.Add(OdysseyDropDown);
 			var AddViewBtn = new ToolStripMenuItem("Add GroupView items");
 			AddViewBtn.Click += AddViewBtn_Click;
+			var CloneScenarioBtn = new ToolStripMenuItem("Clone scenario");
+			CloneScenarioBtn.Click += CloneScenarioBtn_Click;
 			OdysseyDropDown.DropDownItems.Add(AddViewBtn);
+			OdysseyDropDown.DropDownItems.Add(CloneScenarioBtn);
+		}
+
+		private void CloneScenarioBtn_Click(object sender, EventArgs e)
+		{
+			var lev = (Level)ViewForm.LoadedLevel;
+			var s = new EditorForms.CloneScenarioDialog(lev.CurScenario, lev.ScenarioCount);			
+			s.ShowDialog();
+			if (s.result == null)
+				return;
+			foreach (int i in s.result)
+				lev.LoadedLevelData[i] = s.clone ?
+					DeepCloneDictArr.DeepClone((Dictionary<string, dynamic>)lev.LoadedLevelData[lev.CurScenario]) :
+					lev.LoadedLevelData[lev.CurScenario];
 		}
 
 		private void AddViewBtn_Click(object sender, EventArgs e)

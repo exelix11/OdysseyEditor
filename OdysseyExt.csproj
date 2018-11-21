@@ -71,6 +71,12 @@
     <Compile Include="EditorForms\AddPropertyDialog.Designer.cs">
       <DependentUpon>AddPropertyDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorForms\CloneScenarioDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorForms\CloneScenarioDialog.Designer.cs">
+      <DependentUpon>CloneScenarioDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorForms\LinksEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,6 +112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorForms\AddPropertyDialog.resx">
       <DependentUpon>AddPropertyDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorForms\CloneScenarioDialog.resx">
+      <DependentUpon>CloneScenarioDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorForms\LinksEditor.resx">
       <DependentUpon>LinksEditor.cs</DependentUpon>

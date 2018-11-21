@@ -70,6 +70,7 @@ namespace OdysseyExt
         public dynamic LoadedLevelData { get; set; }
 		public string FilePath { get; set; } = "";
         int _ScenarioIndex = -1;
+		public int CurScenario { get => _ScenarioIndex; }
 		public int ScenarioCount => LoadedLevelData.Count;
 
 		public int HighestID { get; set; }
