@@ -158,7 +158,7 @@ namespace OdysseyExt
 		{
 			if (name.EndsWith(".byml"))
 			{
-				ByamlViewer.OpenByml(file, name, false, file,true);
+				ByamlViewer.OpenByml(file, name, file,true);
 				return true;
 			}
 			return false;
